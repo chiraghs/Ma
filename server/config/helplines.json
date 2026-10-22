@@ -1,0 +1,34 @@
+{
+  "notice": "Configurable postpartum and crisis helplines for new mothers. Replace placeholders with your regional numbers.",
+  "helplines": [
+    {
+      "name": "National Maternal Mental Health Hotline",
+      "phone": "1-833-TLC-MAMA (1-833-852-6262)",
+      "text": "1-833-852-6262",
+      "hours": "24/7, Free, Confidential",
+      "languages": ["English", "Spanish", "Translators in 60+ languages"],
+      "description": "Direct confidential support for pregnant and new moms experiencing anxiety, depression, or distress."
+    },
+    {
+      "name": "988 Suicide & Crisis Lifeline",
+      "phone": "988",
+      "text": "988",
+      "hours": "24/7",
+      "description": "Immediate compassionate crisis intervention and emotional support."
+    },
+    {
+      "name": "Postpartum Support International (PSI)",
+      "phone": "1-800-944-4773",
+      "text": "Text 'HELP' to 800-944-4773 (English) or 971-203-7773 (Spanish)",
+      "hours": "Available daily",
+      "description": "Dedicated resources, peer support mentors, and specialized postpartum counselors."
+    },
+    {
+      "name": "Crisis Text Line",
+      "phone": "N/A",
+      "text": "Text 'HOME' to 741741",
+      "hours": "24/7",
+      "description": "Free 24/7 text support with trained crisis volunteers."
+    }
+  ]
+}
