@@ -1,34 +1,43 @@
 {
-  "notice": "Configurable postpartum and crisis helplines for new mothers. Replace placeholders with your regional numbers.",
+  "notice": "India Maternal Mental Health & Crisis Helplines. Please verify regional accessibility.",
   "helplines": [
     {
-      "name": "National Maternal Mental Health Hotline",
-      "phone": "1-833-TLC-MAMA (1-833-852-6262)",
-      "text": "1-833-852-6262",
-      "hours": "24/7, Free, Confidential",
-      "languages": ["English", "Spanish", "Translators in 60+ languages"],
-      "description": "Direct confidential support for pregnant and new moms experiencing anxiety, depression, or distress."
+      "name": "Tele-MANAS (Govt. of India National Mental Health Helpline)",
+      "phone": "14416",
+      "alternate_phone": "1800-891-4416",
+      "hours": "24/7, Toll-Free, Multilingual (20+ Indian languages)",
+      "description": "Government of India 24/7 comprehensive mental health support service with trained counselors and psychologists.",
+      "_comment": "VERIFY: Tele-MANAS toll-free short code 14416 and 1800-891-4416 across Indian telecom circles"
     },
     {
-      "name": "988 Suicide & Crisis Lifeline",
-      "phone": "988",
-      "text": "988",
-      "hours": "24/7",
-      "description": "Immediate compassionate crisis intervention and emotional support."
+      "name": "KIRAN Mental Health Helpline (Ministry of Social Justice & Empowerment)",
+      "phone": "1800-599-0019",
+      "hours": "24/7, Toll-Free",
+      "description": "National helpline offering early screening, first-aid, psychological support, and distress management in 13 languages.",
+      "_comment": "VERIFY: KIRAN 1800-599-0019 toll-free status and operational coverage"
     },
     {
-      "name": "Postpartum Support International (PSI)",
-      "phone": "1-800-944-4773",
-      "text": "Text 'HELP' to 800-944-4773 (English) or 971-203-7773 (Spanish)",
-      "hours": "Available daily",
-      "description": "Dedicated resources, peer support mentors, and specialized postpartum counselors."
+      "name": "Vandrevala Foundation Helpline",
+      "phone": "+91 9999 666 555",
+      "whatsapp": "+91 9999 666 555",
+      "hours": "24/7 Free & Confidential",
+      "description": "Experienced clinical psychologists and crisis counselors providing immediate mental health intervention.",
+      "_comment": "VERIFY: Vandrevala Foundation +91 9999 666 555 24/7 availability"
     },
     {
-      "name": "Crisis Text Line",
-      "phone": "N/A",
-      "text": "Text 'HOME' to 741741",
-      "hours": "24/7",
-      "description": "Free 24/7 text support with trained crisis volunteers."
+      "name": "AASRA Crisis & Suicide Prevention Helpline",
+      "phone": "+91 98204 66726",
+      "hours": "24/7 Free & Confidential",
+      "description": "Volunteer-led compassionate crisis intervention and emotional support.",
+      "_comment": "VERIFY: AASRA +91 98204 66726 current operating hours"
+    },
+    {
+      "name": "Postpartum Support International (PSI) - India Chapter",
+      "email": "psioffice@postpartum.net",
+      "website": "https://www.postpartum.net/locations/india/",
+      "hours": "Online Support Groups & Volunteer Coordinators",
+      "description": "Peer support mentors and perinatal mental health specialists dedicated specifically to new and expecting mothers in India.",
+      "_comment": "VERIFY: PSI India local coordinator contact details"
     }
   ]
 }
