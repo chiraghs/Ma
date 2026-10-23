@@ -2,6 +2,7 @@
 MCP Apps UI Resources (SEP-1865: Interactive User Interfaces for MCP)
 Provides HTML templates declared with the `ui://` URI scheme and MIME type
 `text/html;profile=mcp-app`. These render as sandboxed cards in the Alexa+ interface.
+Styled with the Swasth Maternal Care design system (#FF3B69 rose, #10B981 mint, #38BDF8 sky).
 """
 
 BABY_SUMMARY_CARD_HTML = """<!DOCTYPE html>
@@ -10,19 +11,21 @@ BABY_SUMMARY_CARD_HTML = """<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MA Baby Summary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #121824;
-      --card-bg: rgba(255, 255, 255, 0.05);
-      --card-border: rgba(255, 255, 255, 0.1);
-      --accent-cyan: #00e5ff;
-      --accent-pink: #ff77a9;
-      --accent-lavender: #b388ff;
-      --text: #f0f4f8;
-      --text-muted: #94a3b8;
+      --bg: #0D1322;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #FF3B69;
+      --accent-sky: #38BDF8;
+      --accent-lavender: #A78BFA;
+      --accent-mint: #10B981;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
     }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
       margin: 0;
@@ -33,28 +36,31 @@ BABY_SUMMARY_CARD_HTML = """<!DOCTYPE html>
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       padding-bottom: 10px;
       border-bottom: 1px solid var(--card-border);
     }
     .title {
+      font-family: 'Outfit', sans-serif;
       font-size: 16px;
-      font-weight: 600;
-      color: var(--accent-cyan);
-      letter-spacing: 0.5px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.01em;
     }
     .badge {
-      font-size: 12px;
+      font-size: 11px;
+      font-weight: 600;
       padding: 3px 8px;
-      background: rgba(0, 229, 255, 0.15);
-      border-radius: 12px;
-      color: var(--accent-cyan);
+      background: rgba(255, 59, 105, 0.15);
+      border: 1px solid rgba(255, 59, 105, 0.3);
+      border-radius: 999px;
+      color: #FF8BA7;
     }
     .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .stat-card {
       background: var(--card-bg);
@@ -64,7 +70,8 @@ BABY_SUMMARY_CARD_HTML = """<!DOCTYPE html>
       text-align: center;
     }
     .stat-val {
-      font-size: 22px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
       font-weight: 700;
       margin-top: 4px;
       color: #fff;
@@ -74,29 +81,32 @@ BABY_SUMMARY_CARD_HTML = """<!DOCTYPE html>
       text-transform: uppercase;
       color: var(--text-muted);
       letter-spacing: 0.5px;
+      font-weight: 600;
     }
     .timeline {
-      margin-top: 14px;
+      margin-top: 10px;
     }
     .timeline-title {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
       color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .timeline-item {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 8px 10px;
+      padding: 8px 12px;
       margin-bottom: 6px;
       background: rgba(255, 255, 255, 0.03);
       border-radius: 8px;
-      border-left: 3px solid var(--accent-cyan);
+      border-left: 3px solid var(--primary);
       font-size: 13px;
     }
     .timeline-item.sleep {
-      border-left-color: var(--accent-lavender);
+      border-left-color: var(--accent-sky);
     }
     .time {
       font-size: 11px;
@@ -111,7 +121,7 @@ BABY_SUMMARY_CARD_HTML = """<!DOCTYPE html>
 <body>
   <div class="header">
     <span class="title">👶 Baby Maya's Day</span>
-    <span class="badge" id="periodBadge">Recent</span>
+    <span class="badge" id="periodBadge">Recent Rhythm</span>
   </div>
 
   <div class="stats-grid">
@@ -126,7 +136,7 @@ BABY_SUMMARY_CARD_HTML = """<!DOCTYPE html>
   </div>
 
   <div class="timeline">
-    <div class="timeline-title">Recent Rhythm</div>
+    <div class="timeline-title">Recent Schedule</div>
     <div id="timelineList">
       <div class="timeline-item">
         <span class="time">Just now</span>
@@ -134,17 +144,16 @@ BABY_SUMMARY_CARD_HTML = """<!DOCTYPE html>
       </div>
       <div class="timeline-item sleep">
         <span class="time">1:30 PM</span>
-        <span class="desc">💤 Nap • 1h 45m</span>
+        <span class="desc">💤 Nap • 1h 45m (Crib)</span>
       </div>
       <div class="timeline-item">
         <span class="time">11:00 AM</span>
-        <span class="desc">🤱 Breastfeed • Left 15m</span>
+        <span class="desc">🤱 Nursing • Left 15m</span>
       </div>
     </div>
   </div>
 
   <script>
-    // Listen for data updates via postMessage from host (SEP-1865)
     window.addEventListener('message', (event) => {
       const data = event.data;
       if (data && data.type === 'UPDATE_DATA') {
@@ -154,7 +163,6 @@ BABY_SUMMARY_CARD_HTML = """<!DOCTYPE html>
       }
     });
 
-    // Notify host that UI app is ready
     if (window.parent) {
       window.parent.postMessage({ jsonrpc: "2.0", method: "ui/notifications/initialized", params: {} }, '*');
     }
@@ -169,18 +177,20 @@ MOOD_TREND_CARD_HTML = """<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MA Mood & Rest Trend</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #121824;
-      --card-bg: rgba(255, 255, 255, 0.05);
-      --card-border: rgba(255, 255, 255, 0.1);
-      --accent: #ff77a9;
-      --accent-cyan: #00e5ff;
-      --text: #f0f4f8;
-      --text-muted: #94a3b8;
+      --bg: #0D1322;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #FF3B69;
+      --primary-gradient: linear-gradient(180deg, #FF3B69 0%, rgba(255, 59, 105, 0.3) 100%);
+      --accent-peach: #FFB088;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
     }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
       margin: 0;
@@ -193,15 +203,16 @@ MOOD_TREND_CARD_HTML = """<!DOCTYPE html>
       margin-bottom: 12px;
     }
     .title {
+      font-family: 'Outfit', sans-serif;
       font-size: 15px;
-      font-weight: 600;
-      color: var(--accent);
+      font-weight: 700;
+      color: var(--primary);
     }
     .chart {
       display: flex;
       align-items: flex-end;
       gap: 10px;
-      height: 100px;
+      height: 95px;
       padding: 10px 0;
       border-bottom: 1px solid var(--card-border);
       margin-bottom: 12px;
@@ -215,23 +226,24 @@ MOOD_TREND_CARD_HTML = """<!DOCTYPE html>
     }
     .bar {
       width: 100%;
-      background: linear-gradient(180deg, var(--accent), rgba(255, 119, 169, 0.3));
-      border-radius: 4px 4px 0 0;
+      background: var(--primary-gradient);
+      border-radius: 6px 6px 0 0;
       min-height: 10px;
       transition: height 0.4s ease;
     }
     .day-lbl {
       font-size: 11px;
       color: var(--text-muted);
+      font-weight: 500;
     }
     .note-box {
-      background: rgba(255, 119, 169, 0.1);
-      border: 1px solid rgba(255, 119, 169, 0.2);
-      border-radius: 8px;
-      padding: 10px;
+      background: rgba(255, 59, 105, 0.12);
+      border: 1px solid rgba(255, 59, 105, 0.25);
+      border-radius: 10px;
+      padding: 12px;
       font-size: 12px;
-      line-height: 1.4;
-      color: #ffd1dc;
+      line-height: 1.45;
+      color: #FFD1DC;
     }
   </style>
 </head>
@@ -255,17 +267,17 @@ MOOD_TREND_CARD_HTML = """<!DOCTYPE html>
       <span class="day-lbl">Wed</span>
     </div>
     <div class="bar-group">
-      <div class="bar" style="height: 40%; background: #fb7185;"></div>
+      <div class="bar" style="height: 40%; background: linear-gradient(180deg, #F43F5E, rgba(244, 63, 94, 0.3));"></div>
       <span class="day-lbl">Thu</span>
     </div>
     <div class="bar-group">
-      <div class="bar" style="height: 40%; background: #fb7185;"></div>
+      <div class="bar" style="height: 40%; background: linear-gradient(180deg, #F43F5E, rgba(244, 63, 94, 0.3));"></div>
       <span class="day-lbl">Today</span>
     </div>
   </div>
 
   <div class="note-box" id="suggestionBox">
-    💛 You've been carrying a lot these past few days. Remember you don't have to do it alone. Can your partner take the next feed?
+    💛 You've been carrying so much weight over these past few nights. Remember you don't have to do it alone. Can your partner take the next feed?
   </div>
 
   <script>
@@ -283,17 +295,18 @@ PARTNER_TASKS_CARD_HTML = """<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MA Partner Support Tasks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #121824;
-      --card-bg: rgba(255, 255, 255, 0.05);
-      --card-border: rgba(255, 255, 255, 0.1);
-      --accent: #10b981;
-      --text: #f0f4f8;
-      --text-muted: #94a3b8;
+      --bg: #0D1322;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-mint: #10B981;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
     }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
       margin: 0;
@@ -308,9 +321,10 @@ PARTNER_TASKS_CARD_HTML = """<!DOCTYPE html>
       border-bottom: 1px solid var(--card-border);
     }
     .title {
+      font-family: 'Outfit', sans-serif;
       font-size: 15px;
-      font-weight: 600;
-      color: var(--accent);
+      font-weight: 700;
+      color: var(--accent-mint);
     }
     .task-list {
       list-style: none;
@@ -321,7 +335,7 @@ PARTNER_TASKS_CARD_HTML = """<!DOCTYPE html>
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 10px;
+      padding: 9px 12px;
       margin-bottom: 6px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -335,20 +349,22 @@ PARTNER_TASKS_CARD_HTML = """<!DOCTYPE html>
     .task-left {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .checkbox {
       cursor: pointer;
-      width: 16px;
-      height: 16px;
-      accent-color: var(--accent);
+      width: 17px;
+      height: 17px;
+      accent-color: var(--accent-mint);
     }
     .tag {
       font-size: 10px;
-      padding: 2px 6px;
+      font-weight: 700;
+      padding: 2px 8px;
       background: rgba(16, 185, 129, 0.15);
-      border-radius: 4px;
-      color: var(--accent);
+      border-radius: 999px;
+      color: var(--accent-mint);
+      border: 1px solid rgba(16, 185, 129, 0.3);
     }
   </style>
 </head>
@@ -390,7 +406,6 @@ PARTNER_TASKS_CARD_HTML = """<!DOCTYPE html>
       } else {
         item.classList.remove('completed');
       }
-      // Send tool call notification back to host
       if (window.parent) {
         window.parent.postMessage({
           jsonrpc: "2.0",
