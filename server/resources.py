@@ -14,15 +14,15 @@ BABY_SUMMARY_CARD_HTML = """<!DOCTYPE html>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0D1322;
+      --bg: #140A17;
       --card-bg: rgba(255, 255, 255, 0.04);
       --card-border: rgba(255, 255, 255, 0.08);
       --primary: #FF3B69;
-      --accent-sky: #38BDF8;
-      --accent-lavender: #A78BFA;
+      --accent-orchid: #C084FC;
+      --accent-peach: #FFB088;
       --accent-mint: #10B981;
-      --text: #F8FAFC;
-      --text-muted: #94A3B8;
+      --text: #FFF1F5;
+      --text-muted: #D1A5BA;
     }
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -106,7 +106,7 @@ BABY_SUMMARY_CARD_HTML = """<!DOCTYPE html>
       font-size: 13px;
     }
     .timeline-item.sleep {
-      border-left-color: var(--accent-sky);
+      border-left-color: var(--accent-orchid);
     }
     .time {
       font-size: 11px;
@@ -180,14 +180,14 @@ MOOD_TREND_CARD_HTML = """<!DOCTYPE html>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0D1322;
+      --bg: #140A17;
       --card-bg: rgba(255, 255, 255, 0.04);
       --card-border: rgba(255, 255, 255, 0.08);
       --primary: #FF3B69;
       --primary-gradient: linear-gradient(180deg, #FF3B69 0%, rgba(255, 59, 105, 0.3) 100%);
       --accent-peach: #FFB088;
-      --text: #F8FAFC;
-      --text-muted: #94A3B8;
+      --text: #FFF1F5;
+      --text-muted: #D1A5BA;
     }
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -298,12 +298,12 @@ PARTNER_TASKS_CARD_HTML = """<!DOCTYPE html>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0D1322;
+      --bg: #140A17;
       --card-bg: rgba(255, 255, 255, 0.04);
       --card-border: rgba(255, 255, 255, 0.08);
       --accent-mint: #10B981;
-      --text: #F8FAFC;
-      --text-muted: #94A3B8;
+      --text: #FFF1F5;
+      --text-muted: #D1A5BA;
     }
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;

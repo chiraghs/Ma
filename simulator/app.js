@@ -361,7 +361,7 @@ function renderTimeline(res) {
   sleeps.forEach(s => {
     const t = s.start_time ? s.start_time.split(" ")[1] : "Today";
     html += `
-      <div class="timeline-event">
+      <div class="timeline-event sleep-event">
         <div class="timeline-icon">💤</div>
         <div class="timeline-details">
           <div><strong>Sleep Interval</strong> • ${s.duration_minutes} mins</div>

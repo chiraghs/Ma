@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MA • Alexa+ Voice Companion for New Mothers</title>
-  <link rel="stylesheet" href="style.css?v=swasth_3">
+  <link rel="stylesheet" href="style.css?v=pink_only_1">
   <style>
     :root {
       --primary: #FF3B69 !important;
@@ -12,32 +12,32 @@
       --primary-glow: rgba(255, 59, 105, 0.45) !important;
       --primary-gradient: linear-gradient(135deg, #FF3B69 0%, #FF6F91 100%) !important;
       --accent-peach: #FFB088 !important;
+      --accent-orchid: #C084FC !important;
       --accent-mint: #10B981 !important;
-      --accent-sky: #38BDF8 !important;
-      --accent-lavender: #A78BFA !important;
+      --accent-gold: #F59E0B !important;
       --text-rose: #FF8BA7 !important;
     }
     body {
-      background: radial-gradient(circle at top right, #1E1B4B 0%, #0F172A 50%, #070A10 100%) !important;
+      background: radial-gradient(circle at top right, #241226 0%, #160A1A 50%, #08030B 100%) !important;
     }
     .brand-text h1 span.logo-highlight {
       color: #FF3B69 !important;
-      text-shadow: 0 0 16px rgba(255, 59, 105, 0.5) !important;
+      text-shadow: 0 0 20px rgba(255, 59, 105, 0.6) !important;
     }
     .badge-plus {
       background: linear-gradient(135deg, #FF3B69 0%, #FF6F91 100%) !important;
       color: #FFFFFF !important;
-      box-shadow: 0 2px 10px rgba(255, 59, 105, 0.4) !important;
+      box-shadow: 0 2px 10px rgba(255, 59, 105, 0.45) !important;
       border: none !important;
     }
     .tagline-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(255, 59, 105, 0.15) !important;
+      background: rgba(255, 59, 105, 0.16) !important;
       color: #FF8BA7 !important;
       border: 1px solid rgba(255, 59, 105, 0.35) !important;
-      padding: 3px 10px;
+      padding: 3px 12px;
       border-radius: 999px;
       font-size: 11px;
       font-weight: 700;
@@ -45,19 +45,19 @@
       letter-spacing: 0.5px;
     }
     .alexa-orb-mini {
-      background: radial-gradient(circle, #FF3B69 20%, #38BDF8 85%) !important;
-      box-shadow: 0 0 18px rgba(255, 59, 105, 0.5) !important;
+      background: radial-gradient(circle, #FF3B69 25%, #C084FC 80%) !important;
+      box-shadow: 0 0 20px rgba(255, 59, 105, 0.5) !important;
     }
     .alexa-glow {
-      background: radial-gradient(circle, rgba(255, 59, 105, 0.45) 0%, transparent 70%) !important;
+      background: radial-gradient(circle, rgba(255, 59, 105, 0.5) 0%, transparent 70%) !important;
     }
     .alexa-ring {
       border: 2.5px solid #FF3B69 !important;
-      box-shadow: 0 0 28px rgba(255, 59, 105, 0.45) !important;
-      background: rgba(255, 59, 105, 0.05) !important;
+      box-shadow: 0 0 32px rgba(255, 59, 105, 0.5) !important;
+      background: rgba(255, 59, 105, 0.08) !important;
     }
     .alexa-core {
-      background: radial-gradient(circle, #FF3B69 15%, #6366F1 85%) !important;
+      background: radial-gradient(circle, #FF3B69 20%, #701A75 85%) !important;
     }
     .chip {
       background: rgba(255, 59, 105, 0.12) !important;
@@ -72,26 +72,45 @@
     .mic-btn {
       border: 2px solid #FF3B69 !important;
       color: #FF3B69 !important;
-      background: rgba(255, 59, 105, 0.08) !important;
-      box-shadow: 0 0 14px rgba(255, 59, 105, 0.25) !important;
+      background: rgba(255, 59, 105, 0.1) !important;
+      box-shadow: 0 0 14px rgba(255, 59, 105, 0.3) !important;
     }
     .send-btn {
       background: linear-gradient(135deg, #FF3B69 0%, #FF6F91 100%) !important;
-      box-shadow: 0 2px 10px rgba(255, 59, 105, 0.4) !important;
+      box-shadow: 0 2px 10px rgba(255, 59, 105, 0.45) !important;
     }
     .msg.user .msg-body {
-      background: rgba(255, 59, 105, 0.18) !important;
-      border: 1px solid rgba(255, 59, 105, 0.35) !important;
+      background: rgba(255, 59, 105, 0.2) !important;
+      border: 1px solid rgba(255, 59, 105, 0.4) !important;
       color: #FFF0F4 !important;
+    }
+    .msg.user .msg-avatar {
+      background: linear-gradient(135deg, #FF6F91, #FF3B69) !important;
+    }
+    .msg.bot .msg-avatar {
+      background: radial-gradient(circle, #FF3B69 20%, #4A044E 90%) !important;
+      border: 1.5px solid #FF3B69 !important;
     }
     .tab-btn.active {
       color: #FF3B69 !important;
-      background: rgba(255, 59, 105, 0.14) !important;
+      background: rgba(255, 59, 105, 0.15) !important;
     }
     .badge {
       background: rgba(255, 59, 105, 0.15) !important;
       color: #FF8BA7 !important;
       border: 1px solid rgba(255, 59, 105, 0.25) !important;
+    }
+    .tool-name {
+      color: #FF3B69 !important;
+    }
+    .tool-call-card {
+      border-left: 3.5px solid #FF3B69 !important;
+    }
+    .timeline-event {
+      border-left: 3.5px solid #FF3B69 !important;
+    }
+    .timeline-event.sleep-event {
+      border-left: 3.5px solid #C084FC !important;
     }
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
