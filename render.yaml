@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: ma-voice-companion
+    env: static
+    buildCommand: ""
+    staticPublishPath: ./simulator
