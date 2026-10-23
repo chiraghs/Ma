@@ -4,7 +4,96 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MA • Alexa+ Voice Companion for New Mothers</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=swasth_3">
+  <style>
+    :root {
+      --primary: #FF3B69 !important;
+      --primary-hover: #E02B56 !important;
+      --primary-glow: rgba(255, 59, 105, 0.45) !important;
+      --primary-gradient: linear-gradient(135deg, #FF3B69 0%, #FF6F91 100%) !important;
+      --accent-peach: #FFB088 !important;
+      --accent-mint: #10B981 !important;
+      --accent-sky: #38BDF8 !important;
+      --accent-lavender: #A78BFA !important;
+      --text-rose: #FF8BA7 !important;
+    }
+    body {
+      background: radial-gradient(circle at top right, #1E1B4B 0%, #0F172A 50%, #070A10 100%) !important;
+    }
+    .brand-text h1 span.logo-highlight {
+      color: #FF3B69 !important;
+      text-shadow: 0 0 16px rgba(255, 59, 105, 0.5) !important;
+    }
+    .badge-plus {
+      background: linear-gradient(135deg, #FF3B69 0%, #FF6F91 100%) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 10px rgba(255, 59, 105, 0.4) !important;
+      border: none !important;
+    }
+    .tagline-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 59, 105, 0.15) !important;
+      color: #FF8BA7 !important;
+      border: 1px solid rgba(255, 59, 105, 0.35) !important;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 4px;
+      letter-spacing: 0.5px;
+    }
+    .alexa-orb-mini {
+      background: radial-gradient(circle, #FF3B69 20%, #38BDF8 85%) !important;
+      box-shadow: 0 0 18px rgba(255, 59, 105, 0.5) !important;
+    }
+    .alexa-glow {
+      background: radial-gradient(circle, rgba(255, 59, 105, 0.45) 0%, transparent 70%) !important;
+    }
+    .alexa-ring {
+      border: 2.5px solid #FF3B69 !important;
+      box-shadow: 0 0 28px rgba(255, 59, 105, 0.45) !important;
+      background: rgba(255, 59, 105, 0.05) !important;
+    }
+    .alexa-core {
+      background: radial-gradient(circle, #FF3B69 15%, #6366F1 85%) !important;
+    }
+    .chip {
+      background: rgba(255, 59, 105, 0.12) !important;
+      border: 1px solid rgba(255, 59, 105, 0.3) !important;
+      color: #FF8BA7 !important;
+    }
+    .chip:hover {
+      background: #FF3B69 !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 4px 14px rgba(255, 59, 105, 0.4) !important;
+    }
+    .mic-btn {
+      border: 2px solid #FF3B69 !important;
+      color: #FF3B69 !important;
+      background: rgba(255, 59, 105, 0.08) !important;
+      box-shadow: 0 0 14px rgba(255, 59, 105, 0.25) !important;
+    }
+    .send-btn {
+      background: linear-gradient(135deg, #FF3B69 0%, #FF6F91 100%) !important;
+      box-shadow: 0 2px 10px rgba(255, 59, 105, 0.4) !important;
+    }
+    .msg.user .msg-body {
+      background: rgba(255, 59, 105, 0.18) !important;
+      border: 1px solid rgba(255, 59, 105, 0.35) !important;
+      color: #FFF0F4 !important;
+    }
+    .tab-btn.active {
+      color: #FF3B69 !important;
+      background: rgba(255, 59, 105, 0.14) !important;
+    }
+    .badge {
+      background: rgba(255, 59, 105, 0.15) !important;
+      color: #FF8BA7 !important;
+      border: 1px solid rgba(255, 59, 105, 0.25) !important;
+    }
+  </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,8 +103,9 @@
     <div class="header-brand">
       <div class="alexa-orb-mini"></div>
       <div class="brand-text">
-        <h1>MA <span class="badge-plus">Alexa+</span></h1>
+        <h1><span class="logo-highlight">MA</span> <span class="badge-plus">Alexa+</span></h1>
         <p class="subtitle">Companion & Supporter for New Mothers</p>
+        <div class="tagline-badge">🌸 Maternal Health Companion</div>
       </div>
     </div>
     
@@ -177,6 +267,6 @@
     </aside>
   </main>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=swasth_3"></script>
 </body>
 </html>
