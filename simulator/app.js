@@ -1,9 +1,10 @@
 /**
- * MA Alexa+ Simulator Client Script
- * - Voice Recognition (Web Speech API)
- * - Text-to-Speech (SpeechSynthesis)
- * - Live MCP Streamable HTTP Tool Call Inspector
- * - Baby Timeline & Partner Support Board
+ * MA Alexa+ Smart Display Device Simulator (Echo Show 10)
+ * - Echo Show Screen State Machine (Ambient Home vs. Active Voice/APL)
+ * - Voice Input (Web Speech API) & Push-to-Talk Echo Button
+ * - Speech Synthesis (Alexa Voice Output with Circadian Night Speed)
+ * - The Iconic Alexa Multimodal Light Bar
+ * - Live MCP Streamable HTTP Tool Telemetry Drawer
  * - SEP-1865 MCP Apps Sandboxed Iframe Bridge
  */
 
@@ -22,7 +23,6 @@ let isRecognizing = false;
 
 // DOM Elements
 const body = document.body;
-const chatFeed = document.getElementById("chatFeed");
 const chatForm = document.getElementById("chatForm");
 const chatInput = document.getElementById("chatInput");
 const micBtn = document.getElementById("micBtn");
@@ -31,11 +31,25 @@ const ttsIcon = document.getElementById("ttsIcon");
 const nightModeBtn = document.getElementById("nightModeBtn");
 const nightModeState = document.getElementById("nightModeState");
 const partnerToggleBtn = document.getElementById("partnerToggleBtn");
+const telemetryToggleBtn = document.getElementById("telemetryToggleBtn");
+const telemetryDrawer = document.getElementById("telemetryDrawer");
+const closeTelemetryBtn = document.getElementById("closeTelemetryBtn");
 const seedBtn = document.getElementById("seedBtn");
 
-const alexaStage = document.querySelector(".alexa-stage");
+// Echo Show Screen Views
+const ambientHomeView = document.getElementById("ambientHomeView");
+const activeVoiceView = document.getElementById("activeVoiceView");
+const userCaptionText = document.getElementById("userCaptionText");
+const alexaResponseText = document.getElementById("alexaResponseText");
+const brevityTag = document.getElementById("brevityTag");
+const safetyBanner = document.getElementById("safetyBanner");
+const helplineBadges = document.getElementById("helplineBadges");
+const alexaLightBar = document.getElementById("alexaLightBar");
 const alexaStatus = document.getElementById("alexaStatus");
+const deviceClock = document.getElementById("deviceClock");
+const greetingTime = document.getElementById("greetingTime");
 
+// Telemetry & Inspector
 const toolCallsStream = document.getElementById("toolCallsStream");
 const toolCallCount = document.getElementById("toolCallCount");
 const timelineContainer = document.getElementById("timelineContainer");
@@ -53,12 +67,38 @@ const mcpAppIframe = document.getElementById("mcpAppIframe");
 // Initialization
 // -------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
+  initLiveClock();
   initVoiceRecognition();
   setupEventListeners();
   loadBabyTimeline();
   loadPartnerTasks();
   checkMcpHealth();
 });
+
+// -------------------------------------------------------------
+// Live Device Clock & Greeting
+// -------------------------------------------------------------
+function initLiveClock() {
+  function updateTime() {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const displayHours = hours % 12 || 12;
+    if (deviceClock) {
+      deviceClock.textContent = `${displayHours}:${minutes} ${ampm}`;
+    }
+
+    if (greetingTime) {
+      if (hours >= 22 || hours < 5) greetingTime.textContent = "Good Night";
+      else if (hours < 12) greetingTime.textContent = "Good Morning";
+      else if (hours < 17) greetingTime.textContent = "Good Afternoon";
+      else greetingTime.textContent = "Good Evening";
+    }
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+}
 
 // -------------------------------------------------------------
 // Voice Recognition (Web Speech API)
@@ -73,13 +113,13 @@ function initVoiceRecognition() {
   recognition = new SpeechRecognition();
   recognition.continuous = false;
   recognition.interimResults = false;
-  recognition.lang = "en-IN"; // Prioritize Indian English / global English
+  recognition.lang = "en-US";
 
   recognition.onstart = () => {
     isRecognizing = true;
-    micBtn.classList.add("active");
-    alexaStage.classList.add("listening");
-    alexaStatus.textContent = "Listening... Speak naturally to MA";
+    micBtn.classList.add("recording");
+    alexaLightBar.style.boxShadow = "0 0 25px #FF3B69, 0 0 45px #FFB088";
+    alexaStatus.textContent = "Alexa is listening... Speak naturally";
   };
 
   recognition.onresult = (event) => {
@@ -100,7 +140,7 @@ function initVoiceRecognition() {
 
 function startListening() {
   if (!recognition) {
-    alert("Speech recognition is not available in your browser. Please type your message.");
+    alert("Speech recognition is not available in your browser. Please type your voice prompt below.");
     return;
   }
   try {
@@ -112,9 +152,9 @@ function startListening() {
 
 function stopListening() {
   isRecognizing = false;
-  micBtn.classList.remove("active");
-  alexaStage.classList.remove("listening");
-  alexaStatus.textContent = "Ready • Listening for voice or prompt";
+  micBtn.classList.remove("recording");
+  alexaLightBar.style.boxShadow = "0 0 16px rgba(255, 59, 105, 0.7)";
+  alexaStatus.textContent = "Alexa is ready • Tap mic or speak";
 }
 
 // -------------------------------------------------------------
@@ -123,38 +163,43 @@ function stopListening() {
 function speakReply(text) {
   if (!isTtsEnabled || !("speechSynthesis" in window)) return;
 
-  window.speechSynthesis.cancel(); // Cancel any ongoing speech
+  window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = isNightMode ? 0.9 : 1.0; // Slightly slower, softer in night mode
+  utterance.rate = isNightMode ? 0.88 : 1.0;
   utterance.pitch = 1.05;
 
-  alexaStage.classList.add("speaking");
-  alexaStatus.textContent = "Alexa+ speaking...";
+  alexaStatus.textContent = "MA is speaking on Echo Show...";
+  alexaLightBar.style.boxShadow = "0 0 30px #FF3B69, 0 0 50px #C084FC";
 
   utterance.onend = () => {
-    alexaStage.classList.remove("speaking");
-    alexaStatus.textContent = "Ready • Listening for voice or prompt";
+    alexaLightBar.style.boxShadow = "0 0 16px rgba(255, 59, 105, 0.7)";
+    alexaStatus.textContent = "Alexa is ready • Tap mic or speak";
   };
 
   utterance.onerror = () => {
-    alexaStage.classList.remove("speaking");
-    alexaStatus.textContent = "Ready";
+    alexaStatus.textContent = "Alexa is ready";
   };
 
   window.speechSynthesis.speak(utterance);
 }
 
 // -------------------------------------------------------------
-// Chat Sending & Receiving
+// Voice Command Execution & Screen State Transition
 // -------------------------------------------------------------
 async function sendMessage(text) {
   if (!text || !text.trim()) return;
 
   const userText = text.trim();
-  appendUserMessage(userText);
   chatInput.value = "";
 
-  alexaStatus.textContent = "Processing with Bedrock & MCP...";
+  // Switch Echo Show Screen to Active Voice View
+  ambientHomeView.style.display = "none";
+  activeVoiceView.style.display = "flex";
+  userCaptionText.textContent = `"${userText}"`;
+  alexaResponseText.textContent = "Listening and reasoning with Amazon Bedrock & MCP...";
+  safetyBanner.style.display = "none";
+  brevityTag.textContent = isNightMode ? "🌙 Night Mode: 1 Sentence" : "1–2 Sentences";
+  alexaStatus.textContent = "Bedrock Converse reasoning over MCP...";
 
   try {
     const res = await fetch(`${API_BASE}/chat`, {
@@ -171,7 +216,7 @@ async function sendMessage(text) {
     }
 
     const data = await res.json();
-    appendBotMessage(data);
+    renderEchoResponse(data);
 
     // Speak aloud
     speakReply(data.reply);
@@ -184,62 +229,45 @@ async function sendMessage(text) {
     }
 
   } catch (err) {
-    console.warn("Backend API not reachable (running static/offline mode), generating autonomous client companion response:", err);
+    console.warn("Backend not reachable (offline/static mode). Running client companion engine:", err);
     const fallbackData = generateClientFallback(userText, isNightMode);
-    appendBotMessage(fallbackData);
+    renderEchoResponse(fallbackData);
     speakReply(fallbackData.reply);
 
     if (fallbackData.tool_calls && fallbackData.tool_calls.length > 0) {
       fallbackData.tool_calls.forEach(tc => recordToolCall(tc));
+      loadBabyTimeline();
+      loadPartnerTasks();
     }
   } finally {
     if (!isRecognizing) {
-      alexaStatus.textContent = "Ready • Listening for voice or prompt";
+      alexaStatus.textContent = "Alexa is ready • Tap mic or speak";
     }
   }
 }
 
-function appendUserMessage(text) {
-  const msgEl = document.createElement("div");
-  msgEl.className = "msg user";
-  msgEl.innerHTML = `
-    <div class="msg-avatar">You</div>
-    <div class="msg-body">
-      <p>${escapeHtml(text)}</p>
-      <div class="msg-meta">Mom</div>
-    </div>
-  `;
-  chatFeed.appendChild(msgEl);
-  chatFeed.scrollTop = chatFeed.scrollHeight;
-}
+function renderEchoResponse(data) {
+  alexaResponseText.textContent = data.reply;
+  brevityTag.textContent = data.is_night_mode ? "🌙 Night Mode: 1 Sentence" : "1–2 Sentences";
 
-function appendBotMessage(data) {
-  const msgEl = document.createElement("div");
-  const isSafety = data.safety_triggered;
-  msgEl.className = `msg bot ${isSafety ? "safety-card" : ""}`;
-
-  let helplinesHtml = "";
-  if (isSafety && data.helplines) {
-    helplinesHtml = `
-      <div class="safety-helpline-box">
-        <strong>Direct Maternal Support & Crisis Numbers (India):</strong><br>
-        • Tele-MANAS: <a href="tel:14416">14416</a> or <a href="tel:18008914416">1800-891-4416</a> (24/7 Toll-Free)<br>
-        • Vandrevala Foundation: <a href="tel:+919999666555">+91 9999 666 555</a> (24/7 Counseling)<br>
-        • Kiran Helpline: <a href="tel:18005990019">1800-599-0019</a>
-      </div>
-    `;
+  // Check if distress / safety triggered
+  if (data.safety_triggered) {
+    safetyBanner.style.display = "flex";
+    helplineBadges.innerHTML = "";
+    const lines = data.helplines || [
+      { name: "Tele-MANAS", number: "14416" },
+      { name: "Vandrevala Crisis Line", number: "+91 9999 666 555" },
+      { name: "Maternal Mental Health", number: "1-833-852-6262" }
+    ];
+    lines.forEach(h => {
+      const b = document.createElement("span");
+      b.className = "helpline-badge";
+      b.textContent = `${h.name}: ${h.number}`;
+      helplineBadges.appendChild(b);
+    });
+  } else {
+    safetyBanner.style.display = "none";
   }
-
-  msgEl.innerHTML = `
-    <div class="msg-avatar">MA</div>
-    <div class="msg-body">
-      <p>${escapeHtml(data.reply)}</p>
-      ${helplinesHtml}
-      <div class="msg-meta">${data.is_night_mode ? "🌙 Night Mode (1 sentence)" : "☀️ Alexa+ Companion"}</div>
-    </div>
-  `;
-  chatFeed.appendChild(msgEl);
-  chatFeed.scrollTop = chatFeed.scrollHeight;
 }
 
 // -------------------------------------------------------------
@@ -247,27 +275,21 @@ function appendBotMessage(data) {
 // -------------------------------------------------------------
 function recordToolCall(tc) {
   toolCallCounter++;
-  toolCallCount.textContent = `${toolCallCounter} call${toolCallCounter === 1 ? '' : 's'}`;
+  toolCallCount.textContent = `${toolCallCounter} call${toolCallCounter > 1 ? 's' : ''}`;
 
-  // Remove empty state if present
   const emptyState = toolCallsStream.querySelector(".empty-state");
   if (emptyState) emptyState.remove();
-
-  const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   const card = document.createElement("div");
   card.className = "tool-call-card";
   card.innerHTML = `
-    <div class="tool-header">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
       <span class="tool-name">⚡ ${escapeHtml(tc.name)}</span>
-      <span class="tool-time">${timeStr}</span>
+      <span class="tool-status">200 OK • JSON-RPC</span>
     </div>
-    <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:4px;">
-      Args: <code>${escapeHtml(JSON.stringify(tc.args))}</code>
-    </div>
-    <pre class="tool-json">${escapeHtml(JSON.stringify(tc.result, null, 2))}</pre>
+    <div class="tool-params"><strong>Params:</strong> <code>${escapeHtml(JSON.stringify(tc.args))}</code></div>
+    <div class="tool-output"><strong>Result:</strong> <code>${escapeHtml(JSON.stringify(tc.result))}</code></div>
   `;
-
   toolCallsStream.prepend(card);
 
   // Check if tool returned SEP-1865 _meta.ui.resourceUri
@@ -282,7 +304,6 @@ function recordToolCall(tc) {
 // -------------------------------------------------------------
 async function loadMcpAppUi(resourceUri) {
   try {
-    // Read the UI resource from MCP server via POST /mcp resources/read
     const res = await fetch(MCP_SERVER_URL, {
       method: "POST",
       headers: {
@@ -324,8 +345,6 @@ async function loadBabyTimeline() {
       body: JSON.stringify({ message: "today summary" })
     });
     const data = await res.json();
-    
-    // Extract list of feeds and sleeps from tool call result if available
     const summaryCall = data.tool_calls?.find(c => c.name === "baby_summary");
     if (summaryCall && summaryCall.result) {
       renderTimeline(summaryCall.result);
@@ -351,11 +370,8 @@ function renderTimeline(res) {
     const t = f.logged_at ? f.logged_at.split(" ")[1] : "Today";
     html += `
       <div class="timeline-event">
-        <div class="timeline-icon">🍼</div>
-        <div class="timeline-details">
-          <div><strong>${f.feed_type.replace('_', ' ')}</strong> • ${f.minutes_or_ml} ${f.feed_type.includes('breast') ? 'mins' : 'ml'}</div>
-          <div class="timeline-time">${t} ${f.note ? '• ' + escapeHtml(f.note) : ''}</div>
-        </div>
+        <div style="font-weight:700; color:#FF3B69;">🍼 ${f.feed_type.replace('_', ' ')} • ${f.minutes_or_ml} ${f.feed_type.includes('breast') ? 'mins' : 'ml'}</div>
+        <div style="font-size:11px; opacity:0.8;">${t} ${f.note ? '• ' + escapeHtml(f.note) : ''}</div>
       </div>
     `;
   });
@@ -364,11 +380,8 @@ function renderTimeline(res) {
     const t = s.start_time ? s.start_time.split(" ")[1] : "Today";
     html += `
       <div class="timeline-event sleep-event">
-        <div class="timeline-icon">💤</div>
-        <div class="timeline-details">
-          <div><strong>Sleep Interval</strong> • ${s.duration_minutes} mins</div>
-          <div class="timeline-time">${t} ${s.note ? '• ' + escapeHtml(s.note) : ''}</div>
-        </div>
+        <div style="font-weight:700; color:#C084FC;">💤 Sleep Stretch • ${s.duration_minutes} mins</div>
+        <div style="font-size:11px; opacity:0.8;">${t} ${s.note ? '• ' + escapeHtml(s.note) : ''}</div>
       </div>
     `;
   });
@@ -379,25 +392,16 @@ function renderTimeline(res) {
 function renderDefaultTimeline() {
   timelineContainer.innerHTML = `
     <div class="timeline-event">
-      <div class="timeline-icon">🍼</div>
-      <div class="timeline-details">
-        <div><strong>Breast Nursing</strong> • 20 mins (Right)</div>
-        <div class="timeline-time">Today 3:30 AM • Night feed</div>
-      </div>
+      <div style="font-weight:700; color:#FF3B69;">🍼 Nursing • 15 mins (Left side)</div>
+      <div style="font-size:11px; opacity:0.8;">3:15 AM • Night nurse</div>
+    </div>
+    <div class="timeline-event sleep-event">
+      <div style="font-weight:700; color:#C084FC;">💤 Crib Sleep • 135 mins</div>
+      <div style="font-size:11px; opacity:0.8;">12:45 AM - 3:00 AM • Long stretch</div>
     </div>
     <div class="timeline-event">
-      <div class="timeline-icon">💤</div>
-      <div class="timeline-details">
-        <div><strong>Night Sleep</strong> • 2h 15m</div>
-        <div class="timeline-time">12:45 AM - 3:00 AM • Long stretch</div>
-      </div>
-    </div>
-    <div class="timeline-event">
-      <div class="timeline-icon">🍼</div>
-      <div class="timeline-details">
-        <div><strong>Bottle Feed</strong> • 120 ml</div>
-        <div class="timeline-time">Yesterday 8:30 PM • Formula</div>
-      </div>
+      <div style="font-weight:700; color:#FF3B69;">🍼 Bottle Feed • 120 ml</div>
+      <div style="font-size:11px; opacity:0.8;">Yesterday 8:30 PM • Formula</div>
     </div>
   `;
 }
@@ -416,16 +420,21 @@ async function loadPartnerTasks() {
     const taskCall = data.tool_calls?.find(c => c.name === "partner_tasks");
     if (taskCall && taskCall.result && taskCall.result.tasks) {
       renderPartnerTasks(taskCall.result.tasks);
+    } else {
+      renderDefaultPartnerTasks();
     }
   } catch (e) {
-    // Fallback default tasks
-    renderPartnerTasks([
-      { id: 1, task: "Sterilize and prep evening bottles", assignee: "Alex", status: "pending" },
-      { id: 2, task: "Pick up size 2 diapers from store", assignee: "Alex", status: "pending" },
-      { id: 3, task: "Take 4:00 AM baby shift so mom sleeps", assignee: "Alex", status: "pending" },
-      { id: 4, task: "Fold washed onesies", assignee: "Alex", status: "completed" }
-    ]);
+    renderDefaultPartnerTasks();
   }
+}
+
+function renderDefaultPartnerTasks() {
+  renderPartnerTasks([
+    { id: 1, task: "Sterilize and prep evening bottles", assignee: "Alex", status: "pending" },
+    { id: 2, task: "Pick up size 2 diapers from store", assignee: "Alex", status: "pending" },
+    { id: 3, task: "Take 4:00 AM baby shift so mom sleeps", assignee: "Alex", status: "pending" },
+    { id: 4, task: "Fold washed onesies", assignee: "Alex", status: "completed" }
+  ]);
 }
 
 function renderPartnerTasks(tasks) {
@@ -441,111 +450,126 @@ function renderPartnerTasks(tasks) {
           <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTaskComplete(${t.id}, this)">
           <span>${escapeHtml(t.task)}</span>
         </div>
-        <span class="badge">${escapeHtml(t.assignee || 'Partner')}</span>
+        <span style="font-size:11px; color:#FF8BA7;">${escapeHtml(t.assignee || 'Partner')}</span>
       </li>
     `;
   });
-
   partnerTaskList.innerHTML = html;
 }
 
-window.toggleTaskComplete = async function(id, checkbox) {
+window.toggleTaskComplete = async function(taskId, checkbox) {
+  const isDone = checkbox.checked;
   const row = checkbox.closest(".task-row");
-  row.classList.toggle("done", checkbox.checked);
+  if (isDone) row.classList.add("done");
+  else row.classList.remove("done");
 
-  // Invoke tool via chat
-  sendMessage(`complete partner task ${id}`);
+  try {
+    await fetch(`${API_BASE}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: `complete partner task ${taskId}` })
+    });
+  } catch (e) {
+    console.warn("Could not sync task complete:", e);
+  }
 };
 
 // -------------------------------------------------------------
-// Event Listeners & UI Helpers
+// Setup Event Listeners
 // -------------------------------------------------------------
 function setupEventListeners() {
-  chatForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    sendMessage(chatInput.value);
-  });
-
+  // Push-to-Talk Button
   micBtn.addEventListener("click", () => {
     if (isRecognizing) stopListening();
     else startListening();
   });
 
-  ttsToggleBtn.addEventListener("click", () => {
-    isTtsEnabled = !isTtsEnabled;
-    ttsIcon.textContent = isTtsEnabled ? "🔊" : "🔇";
-    ttsToggleBtn.title = isTtsEnabled ? "Voice Output: ON" : "Voice Output: OFF";
-  });
-
-  nightModeBtn.addEventListener("click", () => {
-    isNightMode = !isNightMode;
-    body.classList.toggle("night-mode", isNightMode);
-    nightModeState.textContent = isNightMode ? "ON" : "OFF";
-    alexaStatus.textContent = isNightMode 
-      ? "🌙 Night Mode Active (1-sentence brevity for quiet nursery)" 
-      : "☀️ Day Mode Active (1-2 sentences)";
-  });
-
-  partnerToggleBtn.addEventListener("click", () => {
-    switchTab("partnerTab");
-  });
-
-  seedBtn.addEventListener("click", async () => {
-    if (confirm("Reset database with fresh 5-day realistic demo data for baby Maya?")) {
-      seedBtn.disabled = true;
-      seedBtn.textContent = "Resetting...";
-      try {
-        await fetch(`${API_BASE}/chat`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: "today summary" })
-        });
-        loadBabyTimeline();
-        loadPartnerTasks();
-        alert("Demo data refreshed!");
-      } finally {
-        seedBtn.disabled = false;
-        seedBtn.innerHTML = `<span class="icon">🔄</span><span class="btn-text">Reset Demo Baby</span>`;
-      }
-    }
-  });
-
-  refreshTimelineBtn.addEventListener("click", () => {
-    loadBabyTimeline();
-  });
-
-  addTaskForm.addEventListener("submit", (e) => {
+  // Utterance Form Submission
+  chatForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const taskText = newTaskInput.value.trim();
-    if (taskText) {
-      sendMessage(`assign partner task: ${taskText}`);
-      newTaskInput.value = "";
-    }
+    sendMessage(chatInput.value);
   });
 
-  // Prompt chips
+  // "Things to Try" Chips
   document.querySelectorAll(".chip").forEach(chip => {
     chip.addEventListener("click", () => {
       const prompt = chip.getAttribute("data-prompt");
-      chatInput.value = prompt;
-      sendMessage(prompt);
+      if (prompt) sendMessage(prompt);
     });
   });
 
-  // Panel tabs
-  document.querySelectorAll(".tab-btn").forEach(btn => {
+  // Night Mode Toggle (Circadian & Zero Blue)
+  nightModeBtn.addEventListener("click", () => {
+    isNightMode = !isNightMode;
+    if (isNightMode) {
+      body.classList.remove("day-mode");
+      body.classList.add("night-mode");
+      nightModeState.textContent = "ON";
+      nightModeBtn.style.background = "#FFB088";
+      nightModeBtn.style.color = "#16080D";
+    } else {
+      body.classList.remove("night-mode");
+      body.classList.add("day-mode");
+      nightModeState.textContent = "OFF";
+      nightModeBtn.style.background = "rgba(255, 59, 105, 0.14)";
+      nightModeBtn.style.color = "#FF8BA7";
+    }
+  });
+
+  // Partner Screen View Toggle
+  partnerToggleBtn.addEventListener("click", () => {
+    telemetryDrawer.classList.toggle("open");
+    switchTelemetryTab("partnerTab");
+  });
+
+  // Telemetry Drawer Toggle
+  if (telemetryToggleBtn) {
+    telemetryToggleBtn.addEventListener("click", () => {
+      telemetryDrawer.classList.toggle("open");
+    });
+  }
+  if (closeTelemetryBtn) {
+    closeTelemetryBtn.addEventListener("click", () => {
+      telemetryDrawer.classList.remove("open");
+    });
+  }
+
+  // Telemetry Tab Switchers
+  document.querySelectorAll(".telemetry-tabs .tab-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const tabId = btn.getAttribute("data-tab");
-      switchTab(tabId);
+      switchTelemetryTab(tabId);
     });
+  });
+
+  // Reset Demo Data
+  seedBtn.addEventListener("click", async () => {
+    seedBtn.disabled = true;
+    seedBtn.textContent = "Resetting...";
+    try {
+      await fetch(`${API_BASE}/seed`, { method: "POST" });
+    } catch(e) {}
+    loadBabyTimeline();
+    loadPartnerTasks();
+    seedBtn.disabled = false;
+    seedBtn.innerHTML = `<span class="icon">🔄</span><span class="btn-text">Reset Demo</span>`;
+  });
+
+  // Add Partner Task
+  addTaskForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const task = newTaskInput.value.trim();
+    if (!task) return;
+    newTaskInput.value = "";
+    sendMessage(`add partner task ${task}`);
   });
 }
 
-function switchTab(tabId) {
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-  document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+function switchTelemetryTab(tabId) {
+  document.querySelectorAll(".telemetry-tabs .tab-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".telemetry-drawer .tab-content").forEach(c => c.classList.remove("active"));
 
-  const targetBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+  const targetBtn = document.querySelector(`.telemetry-tabs .tab-btn[data-tab="${tabId}"]`);
   const targetContent = document.getElementById(tabId);
   if (targetBtn) targetBtn.classList.add("active");
   if (targetContent) targetContent.classList.add("active");
@@ -555,11 +579,11 @@ async function checkMcpHealth() {
   try {
     const res = await fetch(`${API_BASE}/health`);
     if (res.ok) {
-      document.querySelector("#mcpStatus .status-label").textContent = "MCP :8000 (Connected)";
+      document.querySelector("#mcpStatus .status-label").textContent = "MCP :8005 (Streamable HTTP)";
     }
   } catch (e) {
     document.querySelector("#mcpStatus .status-dot").classList.remove("online");
-    document.querySelector("#mcpStatus .status-label").textContent = "MCP Offline (Start server)";
+    document.querySelector("#mcpStatus .status-label").textContent = "MCP Local (Autonomous)";
   }
 }
 
@@ -587,9 +611,9 @@ function generateClientFallback(userText, isNight) {
       reply: "Sarah, you are carrying so much, and you are not alone. Please reach out to your doctor or midwife, or call a trusted 24/7 careline today. We are right here with you.",
       safety_triggered: true,
       helplines: [
-        { name: "Tele-MANAS (24/7 National Mental Health)", number: "14416" },
-        { name: "Vandrevala Foundation (24/7 Crisis Support)", number: "+91 9999 666 555" },
-        { name: "National Maternal Mental Health Hotline", number: "1-833-852-6262" }
+        { name: "Tele-MANAS", number: "14416" },
+        { name: "Vandrevala Foundation", number: "+91 9999 666 555" },
+        { name: "Maternal Mental Health", number: "1-833-852-6262" }
       ],
       tool_calls: [{
         name: "mood_checkin",
@@ -699,4 +723,3 @@ function generateClientFallback(userText, isNight) {
     tool_calls: []
   };
 }
-

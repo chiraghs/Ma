@@ -3,128 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MA • Alexa+ Voice Companion for New Mothers</title>
-  <link rel="stylesheet" href="style.css?v=pink_only_1">
+  <title>MA • Alexa+ Smart Display Device Simulator (Echo Show)</title>
+  <link rel="stylesheet" href="style.css?v=echo_show_1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    /* Inlined High-Priority Device & Zero-Blue Tokens */
     :root {
       --primary: #FF3B69 !important;
       --primary-hover: #E02B56 !important;
       --primary-glow: rgba(255, 59, 105, 0.45) !important;
-      --primary-gradient: linear-gradient(135deg, #FF3B69 0%, #FF6F91 100%) !important;
       --accent-peach: #FFB088 !important;
       --accent-orchid: #C084FC !important;
       --accent-mint: #10B981 !important;
       --accent-gold: #F59E0B !important;
       --text-rose: #FF8BA7 !important;
     }
-    body {
-      background: radial-gradient(circle at top right, #241226 0%, #160A1A 50%, #08030B 100%) !important;
-    }
-    .brand-text h1 span.logo-highlight {
-      color: #FF3B69 !important;
-      text-shadow: 0 0 20px rgba(255, 59, 105, 0.6) !important;
-    }
-    .badge-plus {
-      background: linear-gradient(135deg, #FF3B69 0%, #FF6F91 100%) !important;
-      color: #FFFFFF !important;
-      box-shadow: 0 2px 10px rgba(255, 59, 105, 0.45) !important;
-      border: none !important;
-    }
-    .tagline-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(255, 59, 105, 0.16) !important;
-      color: #FF8BA7 !important;
-      border: 1px solid rgba(255, 59, 105, 0.35) !important;
-      padding: 3px 12px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      margin-top: 4px;
-      letter-spacing: 0.5px;
-    }
-    .alexa-orb-mini {
-      background: radial-gradient(circle, #FF3B69 25%, #C084FC 80%) !important;
-      box-shadow: 0 0 20px rgba(255, 59, 105, 0.5) !important;
-    }
-    .alexa-glow {
-      background: radial-gradient(circle, rgba(255, 59, 105, 0.5) 0%, transparent 70%) !important;
-    }
-    .alexa-ring {
-      border: 2.5px solid #FF3B69 !important;
-      box-shadow: 0 0 32px rgba(255, 59, 105, 0.5) !important;
-      background: rgba(255, 59, 105, 0.08) !important;
-    }
-    .alexa-core {
-      background: radial-gradient(circle, #FF3B69 20%, #701A75 85%) !important;
-    }
-    .chip {
-      background: rgba(255, 59, 105, 0.12) !important;
-      border: 1px solid rgba(255, 59, 105, 0.3) !important;
-      color: #FF8BA7 !important;
-    }
-    .chip:hover {
-      background: #FF3B69 !important;
-      color: #FFFFFF !important;
-      box-shadow: 0 4px 14px rgba(255, 59, 105, 0.4) !important;
-    }
-    .mic-btn {
-      border: 2px solid #FF3B69 !important;
-      color: #FF3B69 !important;
-      background: rgba(255, 59, 105, 0.1) !important;
-      box-shadow: 0 0 14px rgba(255, 59, 105, 0.3) !important;
-    }
-    .send-btn {
-      background: linear-gradient(135deg, #FF3B69 0%, #FF6F91 100%) !important;
-      box-shadow: 0 2px 10px rgba(255, 59, 105, 0.45) !important;
-    }
-    .msg.user .msg-body {
-      background: rgba(255, 59, 105, 0.2) !important;
-      border: 1px solid rgba(255, 59, 105, 0.4) !important;
-      color: #FFF0F4 !important;
-    }
-    .msg.user .msg-avatar {
-      background: linear-gradient(135deg, #FF6F91, #FF3B69) !important;
-    }
-    .msg.bot .msg-avatar {
-      background: radial-gradient(circle, #FF3B69 20%, #4A044E 90%) !important;
-      border: 1.5px solid #FF3B69 !important;
-    }
-    .tab-btn.active {
-      color: #FF3B69 !important;
-      background: rgba(255, 59, 105, 0.15) !important;
-    }
-    .badge {
-      background: rgba(255, 59, 105, 0.15) !important;
-      color: #FF8BA7 !important;
-      border: 1px solid rgba(255, 59, 105, 0.25) !important;
-    }
-    .tool-name {
-      color: #FF3B69 !important;
-    }
-    .tool-call-card {
-      border-left: 3.5px solid #FF3B69 !important;
-    }
-    .timeline-event {
-      border-left: 3.5px solid #FF3B69 !important;
-    }
-    .timeline-event.sleep-event {
-      border-left: 3.5px solid #C084FC !important;
-    }
   </style>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="day-mode">
+  <!-- Top App Navigation & Developer Diagnostic Bar -->
   <header class="app-header">
     <div class="header-brand">
-      <div class="alexa-orb-mini"></div>
+      <div class="echo-device-badge">
+        <span class="device-icon">📺</span>
+        <span class="device-label">Echo Show 10 • Smart Display</span>
+      </div>
       <div class="brand-text">
         <h1><span class="logo-highlight">MA</span> <span class="badge-plus">Alexa+</span></h1>
-        <p class="subtitle">Companion & Supporter for New Mothers</p>
-        <div class="tagline-badge">🌸 Maternal Health Companion</div>
+        <p class="subtitle">Ambient Voice Companion for New Mothers</p>
       </div>
     </div>
     
@@ -134,158 +42,318 @@
         <span class="status-label">MCP :8005 (Streamable HTTP)</span>
       </div>
 
-      <button id="nightModeBtn" class="pill-btn" title="Toggle Night Mode (10pm-6am voice brevity)">
+      <button id="nightModeBtn" class="pill-btn" title="Toggle Night Mode (10pm-6am circadian voice brevity & zero-blue display)">
         <span class="icon">🌙</span>
         <span class="btn-text">Night Mode: <strong id="nightModeState">OFF</strong></span>
       </button>
 
-      <button id="partnerToggleBtn" class="pill-btn" title="Toggle Partner Support Board">
+      <button id="partnerToggleBtn" class="pill-btn" title="Toggle Partner Support Board View">
         <span class="icon">🤝</span>
-        <span class="btn-text">Partner View</span>
+        <span class="btn-text">Partner Screen</span>
+      </button>
+
+      <button id="telemetryToggleBtn" class="pill-btn" title="Toggle Alexa Directives & MCP Telemetry Drawer">
+        <span class="icon">⚡</span>
+        <span class="btn-text">Alexa Telemetry</span>
       </button>
 
       <button id="seedBtn" class="pill-btn secondary" title="Reload 5-day realistic demo data">
         <span class="icon">🔄</span>
-        <span class="btn-text">Reset Demo Baby</span>
+        <span class="btn-text">Reset Demo</span>
       </button>
     </div>
   </header>
 
-  <main class="main-container">
-    <!-- Center Section: Alexa+ Voice Assistant & Chat -->
-    <section class="assistant-section">
-      <!-- Ambient Alexa+ Glow & Orb -->
-      <div class="alexa-stage">
-        <div class="alexa-glow" id="alexaGlow"></div>
-        <div class="alexa-ring" id="alexaRing">
-          <div class="alexa-core"></div>
-        </div>
-        <div class="alexa-wave" id="alexaWave">
-          <span></span><span></span><span></span><span></span><span></span>
-        </div>
-        <div class="alexa-status" id="alexaStatus">Ready • Listening for voice or prompt</div>
+  <!-- Main Stage: Echo Show Smart Display Hardware Simulator -->
+  <main class="simulator-stage">
+    
+    <!-- Outer Echo Show Hardware Bezel -->
+    <div class="echo-show-hardware" id="echoHardware">
+      <!-- Hardware Bezel Accents (Camera, Sensors, Mics) -->
+      <div class="hardware-top-bezel">
+        <div class="sensor-dot"></div>
+        <div class="camera-lens" title="Echo Show 13MP Smart Camera"></div>
+        <div class="dual-mic-left"></div>
+        <div class="dual-mic-right"></div>
       </div>
 
-      <!-- Chat Stream -->
-      <div class="chat-feed" id="chatFeed" role="log" aria-live="polite">
-        <!-- Messages will be injected here -->
-        <div class="msg bot">
-          <div class="msg-avatar">MA</div>
-          <div class="msg-body">
-            <p>Welcome back, Sarah. Maya is 3 months old today. How are you both feeling right now?</p>
-            <div class="msg-meta">Companion • Voice First</div>
+      <!-- The Smart Display Touch Screen -->
+      <div class="echo-show-screen" id="echoScreen">
+        
+        <!-- Screen Top Status Bar -->
+        <div class="screen-status-bar">
+          <div class="status-left">
+            <span class="clock-display" id="deviceClock">3:14 AM</span>
+            <span class="status-divider">•</span>
+            <span class="room-tag">Quiet Nursery</span>
+          </div>
+          <div class="status-center">
+            <span class="baby-badge">👶 Maya • 3 Months</span>
+          </div>
+          <div class="status-right">
+            <span class="status-icon" title="Wi-Fi Connected">📶</span>
+            <span class="status-icon" title="Bluetooth Linked">ᛒ</span>
+            <span class="status-icon" title="Microphone Active">🎙️</span>
+            <button id="ttsToggleBtn" class="screen-btn-icon" title="Toggle Voice Output (SpeechSynthesis)">
+              <span id="ttsIcon">🔊</span>
+            </button>
           </div>
         </div>
+
+        <!-- Dynamic Screen Viewport -->
+        <div class="screen-viewport" id="screenViewport">
+          
+          <!-- View 1: Ambient Glanceable Home Screen -->
+          <div class="display-view active" id="ambientHomeView">
+            <div class="ambient-hero">
+              <div class="ambient-greeting">
+                <span class="greeting-time" id="greetingTime">Early Morning</span>, Sarah
+              </div>
+              <div class="ambient-subtitle">Maya is sleeping peacefully. You're caring for her beautifully.</div>
+            </div>
+
+            <!-- Glanceable Nursery Widgets Grid -->
+            <div class="nursery-widgets-grid">
+              <!-- Widget 1: Last Feeding -->
+              <div class="nursery-widget" id="widgetLastFeed">
+                <div class="widget-header">
+                  <span class="widget-icon">🍼</span>
+                  <span class="widget-title">Last Feed</span>
+                </div>
+                <div class="widget-main" id="widgetFeedValue">15 mins • Left Breast</div>
+                <div class="widget-meta" id="widgetFeedTime">1h 45m ago • Nursing</div>
+              </div>
+
+              <!-- Widget 2: Sleep Stretch -->
+              <div class="nursery-widget" id="widgetLastSleep">
+                <div class="widget-header">
+                  <span class="widget-icon">💤</span>
+                  <span class="widget-title">Current Sleep</span>
+                </div>
+                <div class="widget-main" id="widgetSleepValue">1h 30m stretch</div>
+                <div class="widget-meta" id="widgetSleepTime">Started 1:00 AM in Crib</div>
+              </div>
+
+              <!-- Widget 3: Daily Rhythm -->
+              <div class="nursery-widget" id="widgetDailyRhythm">
+                <div class="widget-header">
+                  <span class="widget-icon">📊</span>
+                  <span class="widget-title">Today's Care</span>
+                </div>
+                <div class="widget-main" id="widgetRhythmValue">5 Feeds • 6h Rest</div>
+                <div class="widget-meta">Healthy rhythm • Zero guilt</div>
+              </div>
+
+              <!-- Widget 4: Partner Support -->
+              <div class="nursery-widget" id="widgetPartnerGlance">
+                <div class="widget-header">
+                  <span class="widget-icon">🤝</span>
+                  <span class="widget-title">Partner Tasks</span>
+                </div>
+                <div class="widget-main" id="widgetPartnerValue">2 Tasks Pending</div>
+                <div class="widget-meta">Alex on 6:00 AM shift</div>
+              </div>
+            </div>
+
+            <!-- Ambient "Things to Try with Alexa" Prompt Cards -->
+            <div class="alexa-things-to-try">
+              <span class="try-label">Try saying to Alexa:</span>
+              <div class="try-carousel">
+                <button class="try-pill chip" data-prompt="Maya just nursed for 15 minutes on the left side">
+                  <span class="mic-glyph">🎙️</span> "Alexa, Maya nursed 15 mins on left"
+                </button>
+                <button class="try-pill chip" data-prompt="Logged 120ml bottle feed for Maya">
+                  <span class="mic-glyph">🎙️</span> "Alexa, log 120ml bottle for Maya"
+                </button>
+                <button class="try-pill chip" data-prompt="Baby Maya slept from 1pm to 2:30pm in her crib">
+                  <span class="mic-glyph">🎙️</span> "Alexa, Maya slept 1pm to 2:30pm"
+                </button>
+                <button class="try-pill chip" data-prompt="Can you give me a summary of Maya's day today?">
+                  <span class="mic-glyph">🎙️</span> "Alexa, how has Maya's day been?"
+                </button>
+                <button class="try-pill chip" data-prompt="What tasks are assigned to my partner?">
+                  <span class="mic-glyph">🎙️</span> "Alexa, show partner tasks"
+                </button>
+                <button class="try-pill chip" data-prompt="I'm feeling really exhausted and overwhelmed today">
+                  <span class="mic-glyph">🎙️</span> "Alexa, I'm feeling exhausted"
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- View 2: Active Voice & APL Multimodal Response Screen -->
+          <div class="display-view" id="activeVoiceView" style="display: none;">
+            <!-- Spoken Closed Caption (What User Spoke) -->
+            <div class="user-caption-bar" id="userCaptionBar">
+              <span class="caption-label">You:</span>
+              <span class="caption-text" id="userCaptionText">"Maya nursed for 15 minutes on the left side"</span>
+            </div>
+
+            <!-- Alexa Voice Response Hero Card -->
+            <div class="alexa-response-hero" id="alexaResponseCard">
+              <div class="response-speaker-bar">
+                <div class="voice-wave" id="alexaWave">
+                  <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <span class="speaker-label">MA • Alexa+ Voice Companion</span>
+                <span class="brevity-tag" id="brevityTag">1–2 Sentences</span>
+              </div>
+              <div class="response-body-text" id="alexaResponseText">
+                I've logged Maya's 15-minute nursing session on the left side. You're caring for her beautifully, Sarah.
+              </div>
+
+              <!-- Interactive Safety Care Banner (Only if safety triggered) -->
+              <div class="safety-care-banner" id="safetyBanner" style="display: none;">
+                <div class="care-icon">💛</div>
+                <div class="care-details">
+                  <strong>You are not alone, Sarah.</strong>
+                  <p>Please reach out to your doctor or midwife, or call a 24/7 confidential support line today:</p>
+                  <div class="helpline-badges" id="helplineBadges"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Embedded APL Visual Micro-Card (Rendered on Echo Show) -->
+            <div class="apl-card-viewport" id="aplViewport">
+              <!-- Dynamic APL Card Rendered Here -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- The Signature Alexa Multimodal Light Bar (Bottom of Echo Screen) -->
+        <div class="alexa-light-bar-container" id="alexaLightBarContainer">
+          <div class="alexa-light-bar" id="alexaLightBar">
+            <div class="light-pulse cyan"></div>
+            <div class="light-pulse pink"></div>
+            <div class="light-pulse gold"></div>
+          </div>
+          <div class="alexa-stage-status" id="alexaStatus">Alexa is ready • Tap mic or speak</div>
+        </div>
+
       </div>
 
-      <!-- Quick Prompt Pills -->
-      <div class="chips-container" id="chipsContainer">
-        <span class="chips-label">Try asking Alexa+:</span>
-        <button class="chip" data-prompt="Maya just nursed for 15 minutes on the left side">🍼 Log 15m nursing</button>
-        <button class="chip" data-prompt="Logged 120ml bottle feed for Maya">🍼 Log 120ml bottle</button>
-        <button class="chip" data-prompt="Baby Maya slept from 1pm to 2:30pm in her crib">💤 Maya slept 1pm to 2:30pm</button>
-        <button class="chip" data-prompt="Can you give me a summary of Maya's day today?">📊 Today's summary</button>
-        <button class="chip" data-prompt="Can you check my mood and rest trend for the past few days?">🌸 Check mood trend</button>
-        <button class="chip" data-prompt="What tasks are assigned to my partner?">🤝 Partner tasks</button>
-        <button class="chip" data-prompt="I'm feeling exhausted and overwhelmed today">💛 I feel exhausted</button>
-        <button class="chip" data-prompt="What is the dosage of calpol for baby fever?">🩺 Medical question</button>
+      <!-- Hardware Speaker Base Grill -->
+      <div class="hardware-speaker-grill">
+        <div class="grill-dot"></div><div class="grill-dot"></div><div class="grill-dot"></div><div class="grill-dot"></div>
       </div>
+    </div>
 
-      <!-- Input Bar -->
-      <footer class="input-bar">
-        <button id="micBtn" class="mic-btn" aria-label="Start Voice Input" title="Click to speak (Web Speech API)">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-            <line x1="12" y1="19" x2="12" y2="23"></line>
-            <line x1="8" y1="23" x2="16" y2="23"></line>
-          </svg>
+    <!-- Below the Screen: Ambient Alexa Push-to-Talk & Utterance Console -->
+    <div class="alexa-control-console">
+      <!-- Big Alexa Push-To-Talk Mic Button -->
+      <div class="mic-stage">
+        <button id="micBtn" class="alexa-ptt-button" title="Push to Talk with Alexa (Web Speech API)">
+          <div class="ptt-ring" id="alexaRing"></div>
+          <div class="ptt-glow" id="alexaGlow"></div>
+          <div class="ptt-icon">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </div>
         </button>
+        <span class="ptt-label">Tap to Speak to Alexa</span>
+      </div>
 
-        <form id="chatForm" class="chat-form">
+      <!-- Text Utterance Simulator (For typing voice commands) -->
+      <form id="chatForm" class="utterance-form">
+        <div class="input-shell">
+          <span class="prompt-prefix">"Alexa,</span>
           <input 
             type="text" 
             id="chatInput" 
-            placeholder="Type or click the microphone to speak to MA..." 
+            placeholder="Maya just nursed for 15 minutes on the left side..." 
             autocomplete="off"
             required
           />
-          <button type="submit" id="sendBtn" class="send-btn" aria-label="Send message">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <span class="prompt-suffix">"</span>
+          <button type="submit" id="sendBtn" class="send-utterance-btn" title="Send Voice Utterance">
+            <span>Simulate Voice</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="22" y1="2" x2="11" y2="13"></line>
               <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
             </svg>
           </button>
-        </form>
-
-        <button id="ttsToggleBtn" class="pill-btn icon-only" title="Toggle Voice Speech Output">
-          <span id="ttsIcon">🔊</span>
-        </button>
-      </footer>
-    </section>
-
-    <!-- Right Side: Real-time Multi-panel Inspector -->
-    <aside class="side-panel" id="sidePanel">
-      <div class="panel-tabs">
-        <button class="tab-btn active" data-tab="toolsTab">⚡ Live MCP Tools</button>
-        <button class="tab-btn" data-tab="timelineTab">👶 Maya's Timeline</button>
-        <button class="tab-btn" data-tab="partnerTab">🤝 Partner Board</button>
-      </div>
-
-      <!-- Tab 1: Live MCP Tool Calls Inspector -->
-      <div class="tab-content active" id="toolsTab">
-        <div class="panel-header">
-          <div class="panel-title">Streamable HTTP Tool Calls</div>
-          <span class="badge" id="toolCallCount">0 calls</span>
         </div>
-        <p class="panel-sub">Inspects real-time JSON-RPC 2.0 calls sent to FastMCP on <code>/mcp</code></p>
-        <div class="tool-calls-stream" id="toolCallsStream">
-          <div class="empty-state">No tool calls yet. Ask MA to log a feed, sleep, or check your summary!</div>
-        </div>
-      </div>
+      </form>
+    </div>
 
-      <!-- Tab 2: Baby Maya's Day Timeline -->
-      <div class="tab-content" id="timelineTab">
-        <div class="panel-header">
-          <div class="panel-title">Today's Feeding & Sleep Rhythm</div>
-          <button class="btn-refresh" id="refreshTimelineBtn" title="Refresh data">🔄</button>
-        </div>
-        <div class="timeline-container" id="timelineContainer">
-          <div class="loading">Loading timeline from local SQLite...</div>
-        </div>
-      </div>
-
-      <!-- Tab 3: Partner Support Board -->
-      <div class="tab-content" id="partnerTab">
-        <div class="panel-header">
-          <div class="panel-title">Family Teamwork Tasks</div>
-          <span class="badge" id="pendingTaskCount">3 pending</span>
-        </div>
-        <p class="panel-sub">Shared support so mom doesn't carry everything alone</p>
-        
-        <form id="addTaskForm" class="add-task-form">
-          <input type="text" id="newTaskInput" placeholder="Assign task to partner (e.g. Prep bottles)..." required />
-          <button type="submit" class="btn-add">+</button>
-        </form>
-
-        <ul class="partner-task-list" id="partnerTaskList">
-          <li class="loading">Loading partner tasks...</li>
-        </ul>
-      </div>
-
-      <!-- SEP-1865 MCP Apps Card Preview Area -->
-      <div class="mcp-app-preview-card" id="mcpAppPreviewContainer" style="display: none;">
-        <div class="preview-header">
-          <span class="preview-badge">✨ MCP App UI (SEP-1865)</span>
-          <span class="preview-uri" id="previewUri">ui://ma/baby-summary-card</span>
-        </div>
-        <div class="iframe-wrapper">
-          <iframe id="mcpAppIframe" sandbox="allow-scripts allow-forms allow-same-origin" src="about:blank"></iframe>
-        </div>
-      </div>
-    </aside>
+    <!-- Hidden compatibility chat feed container for existing JS logger -->
+    <div id="chatFeed" style="display: none;" role="log" aria-live="polite"></div>
   </main>
 
-  <script src="app.js?v=swasth_3"></script>
+  <!-- Collapsible Technical Telemetry Drawer: Alexa Directives & MCP Inspector -->
+  <aside class="telemetry-drawer" id="telemetryDrawer">
+    <div class="telemetry-header">
+      <div class="drawer-title">
+        <span class="glow-icon">⚡</span>
+        <span>Alexa+ & MCP Streamable HTTP Telemetry</span>
+      </div>
+      <div class="drawer-actions">
+        <span class="badge" id="toolCallCount">0 calls</span>
+        <button id="closeTelemetryBtn" class="btn-close-drawer" title="Close Drawer">✕</button>
+      </div>
+    </div>
+
+    <!-- Telemetry Navigation Tabs -->
+    <div class="telemetry-tabs">
+      <button class="tab-btn active" data-tab="toolsTab">⚡ MCP Tool Payloads</button>
+      <button class="tab-btn" data-tab="timelineTab">👶 Maya's Timeline</button>
+      <button class="tab-btn" data-tab="partnerTab">🤝 Partner Board</button>
+    </div>
+
+    <!-- Tab 1: Live MCP Tool Calls Inspector -->
+    <div class="tab-content active" id="toolsTab">
+      <p class="panel-sub">Real-time JSON-RPC 2.0 requests dispatched to FastMCP over Streamable HTTP (2025-11-25)</p>
+      <div class="tool-calls-stream" id="toolCallsStream">
+        <div class="empty-state">No tool calls yet. Speak to Alexa to log a feed, sleep, or partner chore!</div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Baby Maya's Day Timeline -->
+    <div class="tab-content" id="timelineTab">
+      <div class="panel-header-inline">
+        <div class="panel-title">Today's Feeding & Sleep Rhythm</div>
+        <button class="btn-refresh" id="refreshTimelineBtn" title="Refresh data">🔄</button>
+      </div>
+      <div class="timeline-container" id="timelineContainer">
+        <div class="loading">Loading timeline from local SQLite...</div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Partner Support Board -->
+    <div class="tab-content" id="partnerTab">
+      <div class="panel-header-inline">
+        <div class="panel-title">Family Teamwork Tasks</div>
+        <span class="badge" id="pendingTaskCount">2 pending</span>
+      </div>
+      <p class="panel-sub">Shared support so mom doesn't carry everything alone</p>
+      
+      <form id="addTaskForm" class="add-task-form">
+        <input type="text" id="newTaskInput" placeholder="Assign task (e.g. Sterilize bottles)..." required />
+        <button type="submit" class="btn-add">+</button>
+      </form>
+
+      <ul class="partner-task-list" id="partnerTaskList">
+        <li class="loading">Loading partner tasks...</li>
+      </ul>
+    </div>
+
+    <!-- SEP-1865 MCP Apps Card Preview Area -->
+    <div class="mcp-app-preview-card" id="mcpAppPreviewContainer" style="display: none;">
+      <div class="preview-header">
+        <span class="preview-badge">✨ APL / MCP App UI</span>
+        <span class="preview-uri" id="previewUri">ui://ma/baby-summary-card</span>
+      </div>
+      <div class="iframe-wrapper">
+        <iframe id="mcpAppIframe" sandbox="allow-scripts allow-forms allow-same-origin" src="about:blank"></iframe>
+      </div>
+    </div>
+  </aside>
+
+  <script src="app.js?v=echo_show_1"></script>
 </body>
 </html>
