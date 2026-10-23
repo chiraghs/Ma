@@ -9,18 +9,23 @@ import sys
 from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 # Ensure agent and server packages are on path
 AGENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(AGENT_DIR)
 SERVER_DIR = os.path.join(ROOT_DIR, "server")
+SIMULATOR_DIR = os.path.join(ROOT_DIR, "simulator")
 
 for p in (AGENT_DIR, ROOT_DIR, SERVER_DIR):
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from agent import MaMCPDirectClient, MaVoiceAgent
+try:
+    from agent.agent import MaMCPDirectClient, MaVoiceAgent
+except ImportError:
+    from agent import MaMCPDirectClient, MaVoiceAgent
 
 app = FastAPI(
     title="MA Voice Companion Agent API",
@@ -104,6 +109,11 @@ async def chat_endpoint(req: ChatRequest):
         safety_triggered=result.get("safety_triggered", False),
         helplines=result.get("helplines")
     )
+
+
+# Mount the Alexa+ Simulator single-page app
+if os.path.exists(SIMULATOR_DIR):
+    app.mount("/", StaticFiles(directory=SIMULATOR_DIR, html=True), name="simulator")
 
 
 if __name__ == "__main__":

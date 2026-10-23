@@ -161,19 +161,20 @@ def get_partner_tasks_card() -> str:
 # ---------------------------------------------------------
 
 def main():
+    port = int(os.environ.get("MCP_PORT", 8005))
     print("=" * 60)
     print("🌸 MA Voice Companion - Official MCP Server (FastMCP)")
     print("⚡ Transport: Streamable HTTP (Specification 2025-11-25)")
-    print("📍 Endpoint: http://127.0.0.1:8000/mcp")
+    print(f"📍 Endpoint: http://127.0.0.1:{port}/mcp")
     print("=" * 60)
     
     init_db()
     
-    # Run over Streamable HTTP transport on port 8000 at path /mcp
+    # Run over Streamable HTTP transport
     mcp.run(
         transport="streamable-http",
         host="127.0.0.1",
-        port=8000,
+        port=port,
         streamable_http_path="/mcp"
     )
 

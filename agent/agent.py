@@ -33,7 +33,7 @@ CORE PRINCIPLES:
 5. Action-oriented: Call the appropriate tool when she mentions feeds, sleeps, how she's feeling, checking rhythms, or partner tasks.
 """
 
-MCP_SERVER_URL = os.environ.get("MCP_SERVER_URL", "http://127.0.0.1:8000/mcp")
+MCP_SERVER_URL = os.environ.get("MCP_SERVER_URL", "http://127.0.0.1:8005/mcp")
 DEFAULT_BEDROCK_MODEL = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-3-5-sonnet-20241022-v2:0")
 
 

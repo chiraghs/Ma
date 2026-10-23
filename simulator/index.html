@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MA • Alexa+ Voice Companion for New Mothers</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="day-mode">
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="alexa-orb-mini"></div>
+      <div class="brand-text">
+        <h1>MA <span class="badge-plus">Alexa+</span></h1>
+        <p class="subtitle">Companion & Supporter for New Mothers</p>
+      </div>
+    </div>
+    
+    <div class="header-controls">
+      <div class="status-pill" id="mcpStatus">
+        <span class="status-dot online"></span>
+        <span class="status-label">MCP :8005 (Streamable HTTP)</span>
+      </div>
+
+      <button id="nightModeBtn" class="pill-btn" title="Toggle Night Mode (10pm-6am voice brevity)">
+        <span class="icon">🌙</span>
+        <span class="btn-text">Night Mode: <strong id="nightModeState">OFF</strong></span>
+      </button>
+
+      <button id="partnerToggleBtn" class="pill-btn" title="Toggle Partner Support Board">
+        <span class="icon">🤝</span>
+        <span class="btn-text">Partner View</span>
+      </button>
+
+      <button id="seedBtn" class="pill-btn secondary" title="Reload 5-day realistic demo data">
+        <span class="icon">🔄</span>
+        <span class="btn-text">Reset Demo Baby</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- Center Section: Alexa+ Voice Assistant & Chat -->
+    <section class="assistant-section">
+      <!-- Ambient Alexa+ Glow & Orb -->
+      <div class="alexa-stage">
+        <div class="alexa-glow" id="alexaGlow"></div>
+        <div class="alexa-ring" id="alexaRing">
+          <div class="alexa-core"></div>
+        </div>
+        <div class="alexa-wave" id="alexaWave">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="alexa-status" id="alexaStatus">Ready • Listening for voice or prompt</div>
+      </div>
+
+      <!-- Chat Stream -->
+      <div class="chat-feed" id="chatFeed" role="log" aria-live="polite">
+        <!-- Messages will be injected here -->
+        <div class="msg bot">
+          <div class="msg-avatar">MA</div>
+          <div class="msg-body">
+            <p>Welcome back, Sarah. Maya is 3 months old today. How are you both feeling right now?</p>
+            <div class="msg-meta">Companion • Voice First</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Prompt Pills -->
+      <div class="chips-container" id="chipsContainer">
+        <span class="chips-label">Try asking Alexa+:</span>
+        <button class="chip" data-prompt="Maya just nursed for 15 minutes on the left side">🍼 Log 15m nursing</button>
+        <button class="chip" data-prompt="Logged 120ml bottle feed for Maya">🍼 Log 120ml bottle</button>
+        <button class="chip" data-prompt="Baby Maya slept from 1pm to 2:30pm in her crib">💤 Maya slept 1pm to 2:30pm</button>
+        <button class="chip" data-prompt="Can you give me a summary of Maya's day today?">📊 Today's summary</button>
+        <button class="chip" data-prompt="Can you check my mood and rest trend for the past few days?">🌸 Check mood trend</button>
+        <button class="chip" data-prompt="What tasks are assigned to my partner?">🤝 Partner tasks</button>
+        <button class="chip" data-prompt="I'm feeling exhausted and overwhelmed today">💛 I feel exhausted</button>
+        <button class="chip" data-prompt="What is the dosage of calpol for baby fever?">🩺 Medical question</button>
+      </div>
+
+      <!-- Input Bar -->
+      <footer class="input-bar">
+        <button id="micBtn" class="mic-btn" aria-label="Start Voice Input" title="Click to speak (Web Speech API)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </button>
+
+        <form id="chatForm" class="chat-form">
+          <input 
+            type="text" 
+            id="chatInput" 
+            placeholder="Type or click the microphone to speak to MA..." 
+            autocomplete="off"
+            required
+          />
+          <button type="submit" id="sendBtn" class="send-btn" aria-label="Send message">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </form>
+
+        <button id="ttsToggleBtn" class="pill-btn icon-only" title="Toggle Voice Speech Output">
+          <span id="ttsIcon">🔊</span>
+        </button>
+      </footer>
+    </section>
+
+    <!-- Right Side: Real-time Multi-panel Inspector -->
+    <aside class="side-panel" id="sidePanel">
+      <div class="panel-tabs">
+        <button class="tab-btn active" data-tab="toolsTab">⚡ Live MCP Tools</button>
+        <button class="tab-btn" data-tab="timelineTab">👶 Maya's Timeline</button>
+        <button class="tab-btn" data-tab="partnerTab">🤝 Partner Board</button>
+      </div>
+
+      <!-- Tab 1: Live MCP Tool Calls Inspector -->
+      <div class="tab-content active" id="toolsTab">
+        <div class="panel-header">
+          <div class="panel-title">Streamable HTTP Tool Calls</div>
+          <span class="badge" id="toolCallCount">0 calls</span>
+        </div>
+        <p class="panel-sub">Inspects real-time JSON-RPC 2.0 calls sent to FastMCP on <code>/mcp</code></p>
+        <div class="tool-calls-stream" id="toolCallsStream">
+          <div class="empty-state">No tool calls yet. Ask MA to log a feed, sleep, or check your summary!</div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Baby Maya's Day Timeline -->
+      <div class="tab-content" id="timelineTab">
+        <div class="panel-header">
+          <div class="panel-title">Today's Feeding & Sleep Rhythm</div>
+          <button class="btn-refresh" id="refreshTimelineBtn" title="Refresh data">🔄</button>
+        </div>
+        <div class="timeline-container" id="timelineContainer">
+          <div class="loading">Loading timeline from local SQLite...</div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Partner Support Board -->
+      <div class="tab-content" id="partnerTab">
+        <div class="panel-header">
+          <div class="panel-title">Family Teamwork Tasks</div>
+          <span class="badge" id="pendingTaskCount">3 pending</span>
+        </div>
+        <p class="panel-sub">Shared support so mom doesn't carry everything alone</p>
+        
+        <form id="addTaskForm" class="add-task-form">
+          <input type="text" id="newTaskInput" placeholder="Assign task to partner (e.g. Prep bottles)..." required />
+          <button type="submit" class="btn-add">+</button>
+        </form>
+
+        <ul class="partner-task-list" id="partnerTaskList">
+          <li class="loading">Loading partner tasks...</li>
+        </ul>
+      </div>
+
+      <!-- SEP-1865 MCP Apps Card Preview Area -->
+      <div class="mcp-app-preview-card" id="mcpAppPreviewContainer" style="display: none;">
+        <div class="preview-header">
+          <span class="preview-badge">✨ MCP App UI (SEP-1865)</span>
+          <span class="preview-uri" id="previewUri">ui://ma/baby-summary-card</span>
+        </div>
+        <div class="iframe-wrapper">
+          <iframe id="mcpAppIframe" sandbox="allow-scripts allow-forms allow-same-origin" src="about:blank"></iframe>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
