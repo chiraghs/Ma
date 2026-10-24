@@ -4,6 +4,40 @@
 
 ---
 
+## Video Demonstration
+
+- **Demo Video File:** [`video/alexa_plus_swasth_ma_2_5min_demo.mp4`](video/alexa_plus_swasth_ma_2_5min_demo.mp4) (1080p Full HD, 166 seconds, 7.0 MB)
+- **Features Highlighted:** Self-hosted FastMCP server adhering to spec `2025-11-25` over Streamable HTTP on port `8005`, Amazon Bedrock Converse integration, Echo Show 10 landscape smart display, Alexa Multimodal Light Bar, 5-pillar Swasth maternal toolkit, and Tele-MANAS (`14416`) crisis routing.
+- **Narration Audio:** Gentle maternal neural voice (`en-US-JennyNeural`, -4% tempo) mixed with an acoustic 432 Hz healing tone.
+
+---
+
+## Testing Instructions for Judges
+
+Judges can run the complete system locally with two simple commands or explore the pre-recorded video:
+
+1. **Clone and Install:**
+   ```bash
+   git clone https://github.com/chiraghs/Ma.git
+   cd Ma
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+2. **Start the FastMCP Server (port 8005):**
+   ```bash
+   python server/main.py
+   ```
+   > Endpoint: `http://127.0.0.1:8005/mcp` (Streamable HTTP, MCP spec `2025-11-25`)
+3. **Start the Agent API & Echo Show Simulator (port 8001):**
+   ```bash
+   uvicorn agent.api:app --host 127.0.0.1 --port 8001
+   ```
+4. **Open in Browser:**
+   Navigate to `http://localhost:8001/` to experience the Echo Show 10 widescreen display, live speech recognition, real-time JSON-RPC 2.0 tool telemetry drawer, and circadian night mode.
+
+---
+
 ## Inspiration
 
 Every year, millions of new mothers enter the exhausting whirlwind of postpartum recovery. While app stores are flooded with baby trackers, nearly all of them treat mothers like unpaid data-entry clerks at 3:00 AM—forcing them to log nursing milliliters and sleep minutes into cold, bright spreadsheets.

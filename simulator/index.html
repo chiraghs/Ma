@@ -759,7 +759,7 @@
     }
 
     @media (min-width: 769px) {
-      .ref-pill-bottom-dock {
+      .reference-nav-dock, #bottomDock {
         display: none !important;
       }
       .app-screen-viewport {
@@ -4888,8 +4888,12 @@
         const updated = current + amount;
         db.run(`UPDATE smart_tools_logs SET value = '${updated}' WHERE tool_name = 'water';`);
         persistDatabase();
-        document.getElementById('sheetWaterVal').innerText = `${updated} ml`;
-        document.getElementById('toolWaterSub').innerText = `${updated} / 2,500 ml`;
+        const sheetVal = document.getElementById('sheetWaterVal');
+        if (sheetVal) sheetVal.innerText = `${updated} ml`;
+        const toolWaterSub = document.getElementById('toolWaterSub');
+        if (toolWaterSub) toolWaterSub.innerText = `${updated} / 2,500 ml`;
+        const toolWaterSubPlans = document.getElementById('toolWaterSubPlans');
+        if (toolWaterSubPlans) toolWaterSubPlans.innerText = `${updated} / 2,500 ml`;
         showConfetti(`+${amount}ml water logged! Stay hydrated`);
       }
     }
@@ -4904,8 +4908,12 @@
         const updated = current + 1;
         db.run(`UPDATE smart_tools_logs SET value = '${updated}' WHERE tool_name = 'kicks';`);
         persistDatabase();
-        document.getElementById('sheetKickCount').innerText = updated;
-        document.getElementById('toolKicksSub').innerText = `${updated} kicks recorded`;
+        const sheetKick = document.getElementById('sheetKickCount');
+        if (sheetKick) sheetKick.innerText = updated;
+        const toolKicksSub = document.getElementById('toolKicksSub');
+        if (toolKicksSub) toolKicksSub.innerText = `${updated} kicks recorded`;
+        const toolKicksSubPlans = document.getElementById('toolKicksSubPlans');
+        if (toolKicksSubPlans) toolKicksSubPlans.innerText = `${updated} kicks recorded`;
         showConfetti(`Kick #${updated} recorded`);
       }
     }
@@ -5152,7 +5160,11 @@
       const activeEchoBtn = document.getElementById(`echoTab-${tabId}`);
       if (activeEchoBtn) activeEchoBtn.classList.add('active');
 
-      document.getElementById('bottomDock').style.display = (tabId === 'auth') ? 'none' : 'flex';
+      if (window.innerWidth <= 768) {
+        document.getElementById('bottomDock').style.display = (tabId === 'auth') ? 'none' : 'flex';
+      } else {
+        document.getElementById('bottomDock').style.display = 'none';
+      }
       document.getElementById('appViewport').scrollTop = 0;
 
       if (tabId === 'plans') {

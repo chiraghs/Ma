@@ -7,3 +7,8 @@ __pycache__/
 .pytest_cache/
 .DS_Store
 .env
+video/raw_recordings/
+video/audio_clips/
+video/ambient_432hz.mp3
+video/mixed_audio.mp3
+video/narration_full.mp3

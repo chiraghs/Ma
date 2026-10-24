@@ -11,6 +11,15 @@
 
 ---
 
+## 🎥 2.5-Minute Video Demonstration
+
+A synchronized walkthrough of the Echo Show 10 experience, demonstrating the self-hosted MCP server (spec `2025-11-25`, Streamable HTTP), Amazon Bedrock Converse integration, gentle voice narration, and compassionate maternal safety guardrails:
+
+- **Demo Video:** [`video/alexa_plus_swasth_ma_2_5min_demo.mp4`](video/alexa_plus_swasth_ma_2_5min_demo.mp4) (Full HD 1080p, 166 seconds, 7.0 MB)
+- **Audio Profile:** Microsoft Neural Jenny (`en-US-JennyNeural`, -4% rate) paired with an ambient 432 Hz healing harmonic drone.
+
+---
+
 ## 🤱 Overview
 
 Traditional baby trackers treat new mothers like unpaid data-entry clerks at 3:00 AM, inducing anxiety and guilt with rigid statistics (*"Feeding duration below average"*). **MA** flips the paradigm: it is an ambient, compassionate voice companion built from first principles to care for the mother's mental and emotional health.
