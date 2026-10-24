@@ -52,31 +52,49 @@
     }
 
     body {
-      background: #0B0F19;
+      background: #FFF5F7;
+      background-image: radial-gradient(circle at 50% 0%, #FFE6ED 0%, #FFF5F7 50%, #FFF0F4 100%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       overflow-x: hidden;
+      margin: 0;
+      padding: 0;
     }
 
     /* PHONE CONTAINER */
     .phone-container {
       width: 100%;
-      max-width: 412px;
-      height: 870px;
-      max-height: 94vh;
+      max-width: 420px;
+      height: 890px;
+      max-height: 96vh;
       background: var(--canvas);
-      border-radius: 48px;
-      box-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.7), 0 0 0 12px #1E293B, 0 0 0 14px #334155;
+      border-radius: 46px;
+      box-shadow: 0 25px 70px -10px rgba(255, 59, 105, 0.22), 0 0 0 8px #FFFFFF, 0 0 0 9px rgba(255, 59, 105, 0.12);
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       margin: 20px auto;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (max-width: 480px) {
+      body {
+        background: var(--canvas);
+      }
+      .phone-container {
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        margin: 0;
+        box-shadow: none;
+        border: none;
+      }
     }
 
     body.is-fullscreen .phone-container {
@@ -1188,19 +1206,19 @@
     /* FLOATING TOP CONTROL BAR */
     .swasth-top-floating-bar {
       position: fixed;
-      top: 18px;
+      top: 14px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 9999;
       display: flex;
       align-items: center;
-      gap: 14px;
-      background: rgba(19, 26, 43, 0.92);
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.94);
       backdrop-filter: blur(20px);
-      padding: 8px 18px;
+      padding: 6px 16px;
       border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 59, 105, 0.2);
+      border: 1px solid rgba(255, 59, 105, 0.2);
+      box-shadow: 0 10px 30px rgba(255, 59, 105, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
     }
     .top-bar-brand {
       display: flex;
@@ -1210,9 +1228,9 @@
     }
     .brand-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
-      color: #FFFFFF;
+      color: #18181B;
       letter-spacing: -0.5px;
     }
     .brand-badge-ai {
@@ -1227,19 +1245,35 @@
     .top-bar-controls {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
     .top-action-btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      color: #F8FAFC;
-      padding: 6px 12px;
+      gap: 5px;
+      background: #FFF5F7;
+      border: 1px solid rgba(255, 59, 105, 0.2);
+      color: #881337;
+      padding: 5px 12px;
       border-radius: 999px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .top-action-btn:hover {
+      background: #FF3B69;
+      color: white;
+      border-color: #FF3B69;
+    }
+    .top-action-btn.primary {
+      background: var(--primary-gradient);
+      border: none;
+      color: white;
+    }
+    .top-action-btn.primary:hover {
+      box-shadow: 0 4px 14px rgba(255, 59, 105, 0.35);
+    }
       cursor: pointer;
       transition: all 0.2s ease;
     }
@@ -1984,11 +2018,11 @@
               </svg>
             </div>
             <div class="baby-growth-info">
-              <div class="fruit-title" id="babyFruitName">Peach Size</div>
-              <div class="fruit-analogy" id="babyMilestoneShort">Baby is flexing tiny facial muscles and practicing thumb movements.</div>
+              <div class="fruit-title" id="babyFruitName">Peach Stage</div>
+              <div class="fruit-analogy" id="babyMilestoneShort">Baby can squint, frown, and suck thumb! Fine lanugo hair appears.</div>
               <div class="metrics-pills-row">
-                <div class="metric-pill">Length: <strong id="babyLengthText">8.7 cm</strong></div>
-                <div class="metric-pill">Weight: <strong id="babyWeightText">43 g</strong></div>
+                <div class="metric-pill">Length: <strong id="babyLengthText">15.4 cm</strong></div>
+                <div class="metric-pill">Weight: <strong id="babyWeightText">294 g</strong></div>
               </div>
             </div>
           </div>
