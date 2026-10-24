@@ -2,358 +2,4124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MA • Alexa+ Smart Display Device Simulator (Echo Show)</title>
-  <link rel="stylesheet" href="style.css?v=echo_show_1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Swasth - Live Interactive Maternal Health Web App</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+
   <style>
-    /* Inlined High-Priority Device & Zero-Blue Tokens */
     :root {
-      --primary: #FF3B69 !important;
-      --primary-hover: #E02B56 !important;
-      --primary-glow: rgba(255, 59, 105, 0.45) !important;
-      --accent-peach: #FFB088 !important;
-      --accent-orchid: #C084FC !important;
-      --accent-mint: #10B981 !important;
-      --accent-gold: #F59E0B !important;
-      --text-rose: #FF8BA7 !important;
+      --primary: #FF3B69;
+      --primary-hover: #E02B56;
+      --primary-glow: rgba(255, 59, 105, 0.35);
+      --primary-gradient: linear-gradient(135deg, #FF3B69 0%, #FF6F91 100%);
+      
+      --accent-peach: #FFB088;
+      --accent-mint: #34D399;
+      --accent-sky: #38BDF8;
+      --accent-lavender: #A78BFA;
+      
+      --canvas: #FFF5F7;
+      --canvas-surface: #FAF8F9;
+      --card-white: #FFFFFF;
+      
+      /* Navigation Pill Colors */
+      --nav-bg: #FFFFFF;
+      --nav-text-idle: #881337;
+      --nav-stroke-idle: #9F1239;
+      --nav-active: #FF3B69;
+      
+      --text-main: #18181B;
+      --text-muted: #64748B;
+      --text-subtle: #94A3B8;
+      --border-soft: rgba(0, 0, 0, 0.06);
+      
+      --shadow-sm: 0 4px 12px rgba(255, 59, 105, 0.04);
+      --shadow-md: 0 10px 25px rgba(255, 59, 105, 0.08);
+      --shadow-dock: 0 14px 34px rgba(0, 0, 0, 0.1), 0 2px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #0B0F19;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    /* PHONE CONTAINER */
+    .phone-container {
+      width: 100%;
+      max-width: 412px;
+      height: 870px;
+      max-height: 94vh;
+      background: var(--canvas);
+      border-radius: 48px;
+      box-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.7), 0 0 0 12px #1E293B, 0 0 0 14px #334155;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin: 20px auto;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body.is-fullscreen .phone-container {
+      max-width: 100%;
+      height: 100vh;
+      max-height: 100vh;
+      border-radius: 0;
+      margin: 0;
+      box-shadow: none;
+      border: none;
+    }
+
+    /* DYNAMIC ISLAND */
+    .dynamic-island {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110px;
+      height: 28px;
+      background: #000000;
+      border-radius: 20px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .island-cam {
+      width: 10px;
+      height: 10px;
+      background: #111827;
+      border-radius: 50%;
+      border: 1px solid #1f2937;
+    }
+
+    /* STATUS BAR */
+    .status-bar {
+      height: 48px;
+      padding: 12px 24px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #1E293B;
+      z-index: 100;
+      user-select: none;
+    }
+
+    /* APP SCROLLABLE VIEWPORT */
+    .app-screen-viewport {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 100px; /* space for pill dock */
+      position: relative;
+      scroll-behavior: smooth;
+    }
+    .app-screen-viewport::-webkit-scrollbar { display: none; }
+
+    /* TOP HEADER */
+    .app-header {
+      padding: 12px 20px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-avatar-wrap {
+      position: relative;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF3B69, #FFB088);
+      padding: 2.5px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255, 59, 105, 0.2);
+    }
+    .user-avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid white;
+      display: block;
+    }
+    .user-status-dot {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      background: #10B981;
+      border: 2px solid white;
+      border-radius: 50%;
+    }
+    .header-greeting {
+      display: flex;
+      flex-direction: column;
+    }
+    .greeting-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .greeting-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .icon-badge-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--card-white);
+      border: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      cursor: pointer;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+    .icon-badge-btn:hover {
+      color: var(--primary);
+      border-color: rgba(255, 59, 105, 0.3);
+    }
+    .badge-dot {
+      position: absolute;
+      top: 9px;
+      right: 9px;
+      background: var(--primary);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 1.5px solid white;
+    }
+
+    /* WEEK STRIP SELECTOR */
+    .week-strip-wrap {
+      padding: 8px 20px 12px;
+      overflow-x: auto;
+      display: flex;
+      gap: 8px;
+      scrollbar-width: none;
+    }
+    .week-strip-wrap::-webkit-scrollbar { display: none; }
+    .week-pill {
+      background: var(--card-white);
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      padding: 8px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 64px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .week-pill .wk-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .week-pill .wk-num {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .week-pill.active {
+      background: var(--primary-gradient);
+      border-color: transparent;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+    .week-pill.active .wk-lbl, .week-pill.active .wk-num { color: white; }
+
+    /* HERO BABY GROWTH CARD */
+    .hero-growth-card {
+      margin: 4px 20px 16px;
+      background: linear-gradient(135deg, #FFF0F3 0%, #FFE4E9 50%, #FFF5F7 100%);
+      border: 1.5px solid rgba(255, 59, 105, 0.15);
+      border-radius: 28px;
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+    .card-top-tag {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .stage-badge {
+      background: rgba(255, 59, 105, 0.12);
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .day-count-badge {
+      font-size: 11px;
+      font-weight: 800;
+      color: #9D174D;
+      background: #FCE7F3;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .baby-visual-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 8px 0 16px;
+    }
+    .baby-fruit-3d {
+      width: 76px;
+      height: 76px;
+      background: var(--card-white);
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(255, 59, 105, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      color: var(--primary);
+    }
+    .baby-growth-info { flex: 1; }
+    .fruit-title {
+      font-size: 19px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      color: #831843;
+    }
+    .fruit-analogy {
+      font-size: 12px;
+      color: #9D174D;
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+    .metrics-pills-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .metric-pill {
+      background: var(--card-white);
+      border: 1px solid rgba(255, 59, 105, 0.1);
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+    }
+    .metric-pill strong { color: var(--primary); }
+
+    .slider-track-wrap {
+      margin-top: 14px;
+      background: rgba(255, 255, 255, 0.75);
+      padding: 10px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 59, 105, 0.08);
+    }
+    .slider-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748B;
+      margin-bottom: 6px;
+    }
+    .growth-slider {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+      height: 6px;
+    }
+
+    /* STORY CIRCLES */
+    .story-section {
+      padding: 0 20px 14px;
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .story-section::-webkit-scrollbar { display: none; }
+    .story-circle-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      min-width: 60px;
+    }
+    .story-ring {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      padding: 2.5px;
+      background: linear-gradient(135deg, #FF3B69, #FFB088, #A78BFA);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(255, 59, 105, 0.15);
+    }
+    .story-inner {
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+    }
+    .story-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+    }
+
+    /* SECTION HEADING */
+    .section-heading {
+      padding: 10px 20px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .heading-title {
+      font-size: 16px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      color: var(--text-main);
+    }
+    .heading-link {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* DAILY ACTIVITIES */
+    .daily-activities-wrap {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .activity-progress-card {
+      background: var(--card-white);
+      border-radius: 20px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .progress-bar-bg {
+      width: 130px;
+      height: 8px;
+      background: #F1F5F9;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--primary-gradient);
+      width: 67%;
+      transition: width 0.3s;
+    }
+    .category-filter-strip {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 6px;
+    }
+    .category-filter-strip::-webkit-scrollbar { display: none; }
+    .cat-btn {
+      background: var(--card-white);
+      border: 1px solid var(--border-soft);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .cat-btn.active {
+      background: #18181B;
+      color: white;
+      border-color: #18181B;
+    }
+    .activity-card {
+      background: var(--card-white);
+      border-radius: 18px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-soft);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .activity-card.completed {
+      background: #F0FDF4;
+      border-color: #BBF7D0;
+    }
+    .act-icon-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      background: #FFF1F4;
+    }
+    .act-icon-box.iq { background: #FEF9C3; color: #CA8A04; }
+    .act-icon-box.eq { background: #EDE9FE; color: #7C3AED; }
+    .act-icon-box.pq { background: #DCFCE7; color: #16A34A; }
+
+    .activity-details { flex: 1; }
+    .act-tag {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--primary);
+    }
+    .act-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 2px;
+    }
+    .act-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .act-check-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #CBD5E1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: all 0.2s;
+    }
+    .activity-card.completed .act-check-btn {
+      background: #10B981;
+      border-color: #10B981;
+    }
+
+    /* SMART TOOLS 2-COL GRID */
+    .smart-tools-grid {
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .tool-tile {
+      background: var(--card-white);
+      border-radius: 20px;
+      padding: 16px 14px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-soft);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 112px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .tool-tile:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .tool-tile.pastel-blue { background: #F0F9FF; border-color: #BAE6FD; }
+    .tool-tile.pastel-pink { background: #FFF1F4; border-color: #FECDD3; }
+    .tool-tile.pastel-mint { background: #ECFDF5; border-color: #A7F3D0; }
+    .tool-tile.pastel-cyan { background: #ECFEFF; border-color: #A5F3FC; }
+    .tool-tile.pastel-lavender { background: #FAF5FF; border-color: #DDD6FE; }
+    .tool-tile.pastel-apricot { background: #FFF7ED; border-color: #FFEDD5; }
+    .tool-tile.pastel-yellow { background: #FEFCE8; border-color: #FEF08A; }
+    
+    .tile-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #1E293B;
+      font-family: 'Outfit', sans-serif;
+    }
+    .tile-sub {
+      font-size: 10px;
+      color: #64748B;
+      margin-top: 2px;
+    }
+    .tile-icon-svg {
+      align-self: flex-end;
+      color: var(--primary);
+    }
+
+    /* COMMUNITY VIEW */
+    .community-view-wrap {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .comm-tabs-strip {
+      display: flex;
+      border-bottom: 1px solid #E2E8F0;
+      gap: 18px;
+      margin-bottom: 8px;
+    }
+    .comm-tab-item {
+      padding: 8px 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+    }
+    .comm-tab-item.active { color: var(--primary); }
+    .comm-tab-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2.5px;
+      background: var(--primary);
+      border-radius: 999px;
+    }
+    .comm-post-card {
+      background: var(--card-white);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .post-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .post-author-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .post-avatar-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #FFF1F4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+    .post-author-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .post-stage-pill {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+    .post-category-tag {
+      background: #F1F5F9;
+      color: #475569;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .post-content {
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.5;
+    }
+    .post-footer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding-top: 8px;
+      border-top: 1px solid #F8FAFC;
+    }
+    .action-like-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .action-like-btn.liked { color: var(--primary); }
+
+    /* AI CHAT */
+    .ai-chat-wrap {
+      padding: 10px 20px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 100px);
+    }
+    .ai-hero-banner {
+      background: linear-gradient(135deg, #FFF1F4 0%, #EDE9FE 100%);
+      border-radius: 24px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 14px;
+      border: 1px solid rgba(255, 59, 105, 0.15);
+    }
+    .ai-logo-badge {
+      width: 58px;
+      height: 58px;
+      border-radius: 20px;
+      background: var(--primary-gradient);
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px var(--primary-glow);
+    }
+    .prompt-chip {
+      background: var(--card-white);
+      border: 1px solid rgba(0,0,0,0.06);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .chat-messages-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+      overflow-y: auto;
+    }
+    .chat-bubble {
+      max-width: 82%;
+      padding: 12px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .chat-bubble.ai {
+      background: var(--card-white);
+      border: 1px solid var(--border-soft);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      box-shadow: var(--shadow-sm);
+    }
+    .chat-bubble.user {
+      background: var(--primary-gradient);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-input-bar {
+      display: flex;
+      gap: 8px;
+      background: var(--card-white);
+      border-radius: 999px;
+      padding: 6px 6px 6px 16px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-soft);
+    }
+    .chat-input-field {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 13px;
+    }
+    .chat-send-btn {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* AUTH SCREEN */
+    .auth-screen-wrap {
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 680px;
+    }
+    .auth-logo-box { text-align: center; margin-bottom: 28px; }
+    .auth-logo-icon {
+      width: 68px;
+      height: 68px;
+      border-radius: 22px;
+      background: var(--primary-gradient);
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px var(--primary-glow);
+    }
+    .auth-tab-row {
+      display: flex;
+      background: #F1F5F9;
+      border-radius: 12px;
+      padding: 3px;
+      margin-bottom: 20px;
+    }
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .auth-tab.active {
+      background: var(--card-white);
+      color: var(--text-main);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .auth-input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      border: 1.5px solid #E2E8F0;
+      background: var(--card-white);
+      font-size: 14px;
+      outline: none;
+    }
+    .auth-btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 16px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 20px var(--primary-glow);
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .demo-mama-btn {
+      width: 100%;
+      padding: 12px;
+      background: #F0FDF4;
+      border: 1.5px solid #86EFAC;
+      border-radius: 16px;
+      color: #166534;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* ========================================================
+       NAVIGATION DOCK (MATCHING REFERENCE media_1791232095554)
+       ======================================================== */
+    .reference-nav-dock {
+      position: absolute;
+      bottom: 14px;
+      left: 16px;
+      right: 16px;
+      height: 72px;
+      background: var(--nav-bg);
+      border-radius: 38px;
+      box-shadow: var(--shadow-dock);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      z-index: 500;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+    .ref-nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 58px;
+      height: 60px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: var(--nav-stroke-idle);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .ref-nav-tab .tab-icon-wrap {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      stroke: var(--nav-stroke-idle);
+    }
+    .ref-nav-tab .tab-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--nav-text-idle);
+    }
+    .ref-nav-tab.active .tab-icon-wrap {
+      stroke: var(--nav-active);
+      color: var(--nav-active);
+      transform: translateY(-1px);
+    }
+    .ref-nav-tab.active .tab-label {
+      color: var(--nav-active);
+      font-weight: 800;
+    }
+    .ref-nav-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 5px;
+      width: 16px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--nav-active);
+    }
+    
+    /* Center Elevated Circular Button (Like Reference) */
+    .ref-nav-center-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateY(-8px);
+    }
+    .ref-center-circle-btn {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF3B69 0%, #FF5E8A 100%);
+      border: 3.5px solid #FFFFFF;
+      box-shadow: 0 8px 22px rgba(255, 59, 105, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ref-center-circle-btn:hover {
+      transform: scale(1.05);
+    }
+    .ref-center-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--nav-active);
+      margin-top: 3px;
+    }
+
+    
+    /* SETTINGS / MORE VIEW (EXACT REFERENCE REPLICA) */
+    .settings-view-wrap {
+      padding: 0 16px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: linear-gradient(180deg, #FFEBF0 0%, #FFF5F7 140px, #FAF8F9 100%);
+      min-height: 100%;
+    }
+    .settings-header-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 4px 10px;
+    }
+    .settings-back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF3B69 0%, #FF5E8A 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 59, 105, 0.35);
+      border: none;
+      flex-shrink: 0;
+      transition: transform 0.15s;
+    }
+    .settings-back-btn:active {
+      transform: scale(0.92);
+    }
+    .settings-title {
+      font-size: 24px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      color: #1E293B;
+      letter-spacing: -0.3px;
+    }
+    .settings-group-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #64748B;
+      margin: 10px 4px 6px;
+    }
+    .settings-card {
+      background: #FFFFFF;
+      border-radius: 24px;
+      padding: 4px 18px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 0;
+      border-bottom: 1px solid #F8FAFC;
+      cursor: pointer;
+    }
+    .settings-row:last-child {
+      border-bottom: none;
+    }
+    .settings-row-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+    }
+    .settings-icon-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .settings-label-box {
+      display: flex;
+      flex-direction: column;
+    }
+    .settings-row-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1E293B;
+    }
+    .settings-row-sub {
+      font-size: 11px;
+      font-weight: 500;
+      color: #94A3B8;
+      margin-top: 2px;
+    }
+    .settings-row-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #64748B;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .settings-chevron {
+      color: #94A3B8;
+      stroke-width: 2.4;
+    }
+
+    /* iOS SWITCH (PURPLE/MAGENTA GRADIENT MATCHING REF) */
+    .ios-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+    .ios-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .ios-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #CBD5E1;
+      transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 34px;
+    }
+    .ios-slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+    .ios-switch input:checked + .ios-slider {
+      background: linear-gradient(135deg, #E040FB 0%, #A855F7 50%, #FF3B69 100%);
+    }
+    .ios-switch input:checked + .ios-slider:before {
+      transform: translateX(20px);
+    }
+
+    
+    /* FLOATING BACK BUTTON IN SIMULATION MODE */
+    .simulation-back-btn {
+      position: fixed;
+      top: 24px;
+      left: 28px;
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(19, 26, 43, 0.88);
+      backdrop-filter: blur(16px);
+      color: #F8FAFC;
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .simulation-back-btn:hover {
+      background: linear-gradient(135deg, #FF3B69 0%, #FF5E8A 100%);
+      color: white;
+      transform: translateX(-3px);
+      box-shadow: 0 10px 30px rgba(255, 59, 105, 0.4);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    /* Strictly hidden when inside the iframe mockup on Home Page */
+    body.in-iframe .simulation-back-btn {
+      display: none !important;
+    }
+    @media (max-width: 600px) {
+      .simulation-back-btn {
+        top: 14px;
+        left: 14px;
+        padding: 8px 14px;
+        font-size: 12px;
+      }
+    }
+
+    /* FLOATING TOP CONTROL BAR */
+    .swasth-top-floating-bar {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(19, 26, 43, 0.92);
+      backdrop-filter: blur(20px);
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 59, 105, 0.2);
+    }
+    .top-bar-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.5px;
+    }
+    .brand-badge-ai {
+      background: var(--primary-gradient);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 6px;
+      letter-spacing: 0.4px;
+    }
+    .top-bar-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .top-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #F8FAFC;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .top-action-btn:hover {
+      background: rgba(255, 59, 105, 0.25);
+      border-color: #FF3B69;
+      color: white;
+    }
+    .top-action-btn.primary {
+      background: var(--primary-gradient);
+      border: none;
+      color: white;
+    }
+    .top-action-btn.primary:hover {
+      box-shadow: 0 4px 14px rgba(255, 59, 105, 0.4);
+    }
+
+    /* 🌙 NIGHT MODE CIRCADIAN (ZERO BLUE) */
+    body.night-mode {
+      background: #090306 !important;
+      --canvas: #0E050A !important;
+      --canvas-surface: #170911 !important;
+      --card-white: #1C0C15 !important;
+      --text-main: #FFFBEB !important;
+      --text-muted: #D97706 !important;
+      --text-subtle: #92400E !important;
+      --primary: #FFB088 !important;
+      --primary-hover: #F59E0B !important;
+      --primary-gradient: linear-gradient(135deg, #FFB088 0%, #F59E0B 100%) !important;
+      --nav-bg: #15080E !important;
+      --nav-text-idle: #D97706 !important;
+      --nav-stroke-idle: #B45309 !important;
+      --nav-active: #FFB088 !important;
+      --border-soft: rgba(255, 176, 136, 0.2) !important;
+    }
+    body.night-mode .phone-container {
+      box-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.9), 0 0 0 12px #18080E, 0 0 0 14px #2D141A !important;
+    }
+    body.night-mode .swasth-top-floating-bar {
+      background: rgba(22, 10, 16, 0.95) !important;
+      border-color: rgba(255, 176, 136, 0.25) !important;
+    }
+
+    .chat-mic-btn {
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 59, 105, 0.12);
+      border: 1.5px solid var(--primary);
+      border-radius: 50%;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .chat-mic-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+    .chat-mic-btn.active {
+      background: var(--primary);
+      color: white;
+      animation: pulseMic 1s infinite alternate;
+    }
+    @keyframes pulseMic {
+      0% { box-shadow: 0 0 0 0 rgba(255, 59, 105, 0.4); }
+      100% { box-shadow: 0 0 0 10px rgba(255, 59, 105, 0); }
+    }
+
+    @media (max-width: 600px) {
+      .swasth-top-floating-bar {
+        top: 10px;
+        width: 94%;
+        padding: 6px 12px;
+      }
+      .brand-title, .btn-lbl {
+        display: none;
+      }
+    }
+
+    
+    /* SESSION & LONG-TERM CARE ENGAGEMENT STYLES */
+    .session-container {
+      padding: 0 18px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .session-tabs-strip {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+      margin-bottom: 4px;
+    }
+    .session-tabs-strip::-webkit-scrollbar { display: none; }
+    .session-tab-btn {
+      background: var(--card-white);
+      border: 1px solid var(--border-soft);
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .session-tab-btn.active {
+      background: var(--primary-gradient);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    /* FEATURED PROGRAM CARD (MATCHING REF 32) */
+    .featured-program-card {
+      background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+      border-radius: 26px;
+      padding: 22px;
+      color: white;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .featured-program-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .program-stage-pill {
+      background: rgba(255, 59, 105, 0.25);
+      border: 1px solid rgba(255, 59, 105, 0.4);
+      color: #FF7597;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .program-card-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .program-title {
+      font-size: 22px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: -0.3px;
+    }
+    .program-sub {
+      font-size: 12px;
+      color: #94A3B8;
+      margin-top: 4px;
+      line-height: 1.45;
+    }
+    .program-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .btn-start-session {
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px var(--primary-glow);
+      transition: all 0.2s;
+    }
+    .btn-start-session:hover {
+      transform: translateY(-1px);
+    }
+
+    /* ADD TO YOUR ROUTINE CARDS (MATCHING REF 32) */
+    .routine-tiles-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .routine-tile-item {
+      background: var(--card-white);
+      border-radius: 20px;
+      padding: 14px 10px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .routine-tile-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .routine-tile-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .routine-tile-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #1E293B;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .routine-tile-sub {
+      font-size: 9px;
+      color: #64748B;
+      margin-top: 2px;
+    }
+
+    /* 6 STAGES GRID (MATCHING REF 35) */
+    .stages-grid-6 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .stage-card-box {
+      background: var(--card-white);
+      border-radius: 20px;
+      padding: 14px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .stage-card-box:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .stage-icon-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .stage-name-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #1E293B;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .stage-sub-info {
+      font-size: 10px;
+      color: #64748B;
+      margin-top: 1px;
+    }
+
+    /* TIMED INTERVALS CIRCUIT (MATCHING REF 33) */
+    .circuit-player-card {
+      background: var(--card-white);
+      border-radius: 26px;
+      padding: 18px;
+      border: 1.5px solid var(--border-soft);
+      box-shadow: var(--shadow-md);
+    }
+    .circuit-top-progress {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .circuit-progress-track {
+      width: 100%;
+      height: 6px;
+      background: #F1F5F9;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 8px 0 14px;
+    }
+    .circuit-progress-fill {
+      height: 100%;
+      background: var(--primary-gradient);
+      width: 66%;
+      transition: width 0.3s;
+    }
+    .circuit-rounds-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .round-step-pill {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      border: 1.5px solid #CBD5E1;
+      color: #64748B;
+    }
+    .round-step-pill.completed {
+      background: #10B981;
+      border-color: #10B981;
+      color: white;
+    }
+    .round-step-pill.active {
+      background: var(--primary-gradient);
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 2px 8px var(--primary-glow);
+    }
+    .circuit-move-box {
+      background: #FFF1F4;
+      border: 1.5px solid rgba(255, 59, 105, 0.2);
+      border-radius: 18px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .circuit-move-box.active {
+      border-color: var(--primary);
+      background: #FFEBF0;
+    }
+    .move-name-txt {
+      font-size: 13px;
+      font-weight: 800;
+      color: #1E293B;
+    }
+    .move-sub-txt {
+      font-size: 10px;
+      color: #64748B;
+      margin-top: 2px;
+    }
+    .move-reps-badge {
+      background: white;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--primary);
+      border: 1px solid rgba(255, 59, 105, 0.15);
+    }
+
+    /* INSTRUCTORS ROW (MATCHING REF 34) */
+    .instructors-strip-scroll {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 4px 2px 8px;
+    }
+    .instructors-strip-scroll::-webkit-scrollbar { display: none; }
+    .instructor-item-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      min-width: 66px;
+      cursor: pointer;
+    }
+    .instructor-avatar-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF3B69 0%, #FFB088 100%);
+      padding: 2.5px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 6px;
+    }
+    .instructor-avatar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+    .instructor-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: #1E293B;
+    }
+    .instructor-tag {
+      font-size: 9px;
+      color: #64748B;
+    }
+
+    /* NUTRITION & RECIPES (MATCHING REF 36) */
+    .nutrition-stats-header {
+      background: #18181B;
+      border-radius: 20px;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      color: white;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .nutri-stat-num {
+      font-size: 18px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      color: var(--primary);
+    }
+    .nutri-stat-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+    .weekly-lesson-box {
+      background: var(--card-white);
+      border-radius: 22px;
+      padding: 16px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 14px;
+    }
+    .lesson-days-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #F1F5F9;
+    }
+    .lesson-day-check {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #CBD5E1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: #64748B;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lesson-day-check.done {
+      background: var(--primary-gradient);
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 2px 8px var(--primary-glow);
+    }
+    .recipe-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .recipe-card-item {
+      background: var(--card-white);
+      border-radius: 18px;
+      padding: 14px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 120px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .recipe-card-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+    .recipe-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #1E293B;
+      line-height: 1.35;
+    }
+    .recipe-benefit-tag {
+      font-size: 9px;
+      font-weight: 700;
+      color: #059669;
+      background: #ECFDF5;
+      padding: 3px 8px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    /* BOTTOM SHEET */
+    .app-bottom-sheet {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 32px 32px 0 0;
+      padding: 24px 20px 40px;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+      z-index: 600;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      visibility: hidden;
+    }
+    .app-bottom-sheet.open {
+      transform: translateY(0);
+      pointer-events: auto;
+      visibility: visible;
+    }
+    .sheet-action-btn {
+      width: 100%;
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      padding: 13px;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 15px var(--primary-glow);
+      transition: all 0.2s;
+    }
+    .sheet-action-btn:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+    .sheet-handle {
+      width: 40px;
+      height: 4px;
+      background: #CBD5E1;
+      border-radius: 999px;
+      margin: 0 auto 16px;
+      cursor: pointer;
+    }
+
+    .confetti-pop {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: #10B981;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 800;
+      pointer-events: none;
+    }
+    .confetti-pop.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
   </style>
 </head>
-<body class="day-mode">
-  <!-- Top App Navigation & Developer Diagnostic Bar -->
-  <header class="app-header">
-    <div class="header-brand">
-      <div class="echo-device-badge">
-        <span class="device-icon">📺</span>
-        <span class="device-label">Echo Show 10 • Smart Display</span>
-      </div>
-      <div class="brand-text">
-        <h1><span class="logo-highlight">MA</span> <span class="badge-plus">Alexa+</span></h1>
-        <p class="subtitle">Ambient Voice Companion for New Mothers</p>
-      </div>
-    </div>
-    
-    <div class="header-controls">
-      <div class="status-pill" id="mcpStatus">
-        <span class="status-dot online"></span>
-        <span class="status-label">MCP :8005 (Streamable HTTP)</span>
-      </div>
+<body>
 
-      <button id="nightModeBtn" class="pill-btn" title="Toggle Night Mode (10pm-6am circadian voice brevity & zero-blue display)">
-        <span class="icon">🌙</span>
-        <span class="btn-text">Night Mode: <strong id="nightModeState">OFF</strong></span>
-      </button>
-
-      <button id="partnerToggleBtn" class="pill-btn" title="Toggle Partner Support Board View">
-        <span class="icon">🤝</span>
-        <span class="btn-text">Partner Screen</span>
-      </button>
-
-      <button id="telemetryToggleBtn" class="pill-btn" title="Toggle Alexa Directives & MCP Telemetry Drawer">
-        <span class="icon">⚡</span>
-        <span class="btn-text">Alexa Telemetry</span>
-      </button>
-
-      <button id="seedBtn" class="pill-btn secondary" title="Reload 5-day realistic demo data">
-        <span class="icon">🔄</span>
-        <span class="btn-text">Reset Demo</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- Main Stage: Echo Show Smart Display Hardware Simulator -->
-  <main class="simulator-stage">
-    
-    <!-- Outer Echo Show Hardware Bezel -->
-    <div class="echo-show-hardware" id="echoHardware">
-      <!-- Hardware Bezel Accents (Camera, Sensors, Mics) -->
-      <div class="hardware-top-bezel">
-        <div class="sensor-dot"></div>
-        <div class="camera-lens" title="Echo Show 13MP Smart Camera"></div>
-        <div class="dual-mic-left"></div>
-        <div class="dual-mic-right"></div>
-      </div>
-
-      <!-- The Smart Display Touch Screen -->
-      <div class="echo-show-screen" id="echoScreen">
-        
-        <!-- Screen Top Status Bar -->
-        <div class="screen-status-bar">
-          <div class="status-left">
-            <span class="clock-display" id="deviceClock">3:14 AM</span>
-            <span class="status-divider">•</span>
-            <span class="room-tag">Quiet Nursery</span>
-          </div>
-          <div class="status-center">
-            <span class="baby-badge">👶 Maya • 3 Months</span>
-          </div>
-          <div class="status-right">
-            <span class="status-icon" title="Wi-Fi Connected">📶</span>
-            <span class="status-icon" title="Bluetooth Linked">ᛒ</span>
-            <span class="status-icon" title="Microphone Active">🎙️</span>
-            <button id="ttsToggleBtn" class="screen-btn-icon" title="Toggle Voice Output (SpeechSynthesis)">
-              <span id="ttsIcon">🔊</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Dynamic Screen Viewport -->
-        <div class="screen-viewport" id="screenViewport">
-          
-          <!-- View 1: Ambient Glanceable Home Screen -->
-          <div class="display-view active" id="ambientHomeView">
-            <div class="ambient-hero">
-              <div class="ambient-greeting">
-                <span class="greeting-time" id="greetingTime">Early Morning</span>, Sarah
-              </div>
-              <div class="ambient-subtitle">Maya is sleeping peacefully. You're caring for her beautifully.</div>
-            </div>
-
-            <!-- Glanceable Nursery Widgets Grid -->
-            <div class="nursery-widgets-grid">
-              <!-- Widget 1: Last Feeding -->
-              <div class="nursery-widget" id="widgetLastFeed">
-                <div class="widget-header">
-                  <span class="widget-icon">🍼</span>
-                  <span class="widget-title">Last Feed</span>
-                </div>
-                <div class="widget-main" id="widgetFeedValue">15 mins • Left Breast</div>
-                <div class="widget-meta" id="widgetFeedTime">1h 45m ago • Nursing</div>
-              </div>
-
-              <!-- Widget 2: Sleep Stretch -->
-              <div class="nursery-widget" id="widgetLastSleep">
-                <div class="widget-header">
-                  <span class="widget-icon">💤</span>
-                  <span class="widget-title">Current Sleep</span>
-                </div>
-                <div class="widget-main" id="widgetSleepValue">1h 30m stretch</div>
-                <div class="widget-meta" id="widgetSleepTime">Started 1:00 AM in Crib</div>
-              </div>
-
-              <!-- Widget 3: Daily Rhythm -->
-              <div class="nursery-widget" id="widgetDailyRhythm">
-                <div class="widget-header">
-                  <span class="widget-icon">📊</span>
-                  <span class="widget-title">Today's Care</span>
-                </div>
-                <div class="widget-main" id="widgetRhythmValue">5 Feeds • 6h Rest</div>
-                <div class="widget-meta">Healthy rhythm • Zero guilt</div>
-              </div>
-
-              <!-- Widget 4: Partner Support -->
-              <div class="nursery-widget" id="widgetPartnerGlance">
-                <div class="widget-header">
-                  <span class="widget-icon">🤝</span>
-                  <span class="widget-title">Partner Tasks</span>
-                </div>
-                <div class="widget-main" id="widgetPartnerValue">2 Tasks Pending</div>
-                <div class="widget-meta">Alex on 6:00 AM shift</div>
-              </div>
-            </div>
-
-            <!-- Ambient "Things to Try with Alexa" Prompt Cards -->
-            <div class="alexa-things-to-try">
-              <span class="try-label">Try saying to Alexa:</span>
-              <div class="try-carousel">
-                <button class="try-pill chip" data-prompt="Maya just nursed for 15 minutes on the left side">
-                  <span class="mic-glyph">🎙️</span> "Alexa, Maya nursed 15 mins on left"
-                </button>
-                <button class="try-pill chip" data-prompt="Logged 120ml bottle feed for Maya">
-                  <span class="mic-glyph">🎙️</span> "Alexa, log 120ml bottle for Maya"
-                </button>
-                <button class="try-pill chip" data-prompt="Baby Maya slept from 1pm to 2:30pm in her crib">
-                  <span class="mic-glyph">🎙️</span> "Alexa, Maya slept 1pm to 2:30pm"
-                </button>
-                <button class="try-pill chip" data-prompt="Can you give me a summary of Maya's day today?">
-                  <span class="mic-glyph">🎙️</span> "Alexa, how has Maya's day been?"
-                </button>
-                <button class="try-pill chip" data-prompt="What tasks are assigned to my partner?">
-                  <span class="mic-glyph">🎙️</span> "Alexa, show partner tasks"
-                </button>
-                <button class="try-pill chip" data-prompt="I'm feeling really exhausted and overwhelmed today">
-                  <span class="mic-glyph">🎙️</span> "Alexa, I'm feeling exhausted"
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- View 2: Active Voice & APL Multimodal Response Screen -->
-          <div class="display-view" id="activeVoiceView" style="display: none;">
-            <!-- Spoken Closed Caption (What User Spoke) -->
-            <div class="user-caption-bar" id="userCaptionBar">
-              <span class="caption-label">You:</span>
-              <span class="caption-text" id="userCaptionText">"Maya nursed for 15 minutes on the left side"</span>
-            </div>
-
-            <!-- Alexa Voice Response Hero Card -->
-            <div class="alexa-response-hero" id="alexaResponseCard">
-              <div class="response-speaker-bar">
-                <div class="voice-wave" id="alexaWave">
-                  <span></span><span></span><span></span><span></span><span></span>
-                </div>
-                <span class="speaker-label">MA • Alexa+ Voice Companion</span>
-                <span class="brevity-tag" id="brevityTag">1–2 Sentences</span>
-              </div>
-              <div class="response-body-text" id="alexaResponseText">
-                I've logged Maya's 15-minute nursing session on the left side. You're caring for her beautifully, Sarah.
-              </div>
-
-              <!-- Interactive Safety Care Banner (Only if safety triggered) -->
-              <div class="safety-care-banner" id="safetyBanner" style="display: none;">
-                <div class="care-icon">💛</div>
-                <div class="care-details">
-                  <strong>You are not alone, Sarah.</strong>
-                  <p>Please reach out to your doctor or midwife, or call a 24/7 confidential support line today:</p>
-                  <div class="helpline-badges" id="helplineBadges"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Embedded APL Visual Micro-Card (Rendered on Echo Show) -->
-            <div class="apl-card-viewport" id="aplViewport">
-              <!-- Dynamic APL Card Rendered Here -->
-            </div>
-          </div>
-
-        </div>
-
-        <!-- The Signature Alexa Multimodal Light Bar (Bottom of Echo Screen) -->
-        <div class="alexa-light-bar-container" id="alexaLightBarContainer">
-          <div class="alexa-light-bar" id="alexaLightBar">
-            <div class="light-pulse cyan"></div>
-            <div class="light-pulse pink"></div>
-            <div class="light-pulse gold"></div>
-          </div>
-          <div class="alexa-stage-status" id="alexaStatus">Alexa is ready • Tap mic or speak</div>
-        </div>
-
-      </div>
-
-      <!-- Hardware Speaker Base Grill -->
-      <div class="hardware-speaker-grill">
-        <div class="grill-dot"></div><div class="grill-dot"></div><div class="grill-dot"></div><div class="grill-dot"></div>
-      </div>
+  <!-- TOP SWASTH & MA ALEXA+ FLOATING BAR -->
+  <div class="swasth-top-floating-bar" id="swasthTopBar">
+    <div class="top-bar-brand" onclick="switchTab('home')">
+      <img src="assets/swasth_logo.svg" alt="Swasth Logo" style="width: 26px; height: 26px; border-radius: 8px;">
+      <span class="brand-title">Swasth</span>
+      <span class="brand-badge-ai">MA Alexa+</span>
     </div>
 
-    <!-- Below the Screen: Ambient Alexa Push-to-Talk & Utterance Console -->
-    <div class="alexa-control-console">
-      <!-- Big Alexa Push-To-Talk Mic Button -->
-      <div class="mic-stage">
-        <button id="micBtn" class="alexa-ptt-button" title="Push to Talk with Alexa (Web Speech API)">
-          <div class="ptt-ring" id="alexaRing"></div>
-          <div class="ptt-glow" id="alexaGlow"></div>
-          <div class="ptt-icon">
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-              <line x1="12" y1="19" x2="12" y2="23"></line>
-              <line x1="8" y1="23" x2="16" y2="23"></line>
+    <div class="top-bar-controls">
+      <button class="top-action-btn" id="nightToggleBtn" onclick="toggleNightMode()" title="Toggle Circadian Night Mode (Zero Blue)">
+        <span id="nightIcon">🌙</span>
+        <span class="btn-lbl">Night Mode</span>
+      </button>
+
+      <button class="top-action-btn" onclick="openToolSheet('mcp')" title="Live Model Context Protocol Tools Inspector">
+        <span style="color:#10B981;">⚡</span>
+        <span class="btn-lbl">MCP :8005</span>
+      </button>
+
+      <button class="top-action-btn primary" onclick="switchTab('ai')" title="Talk to Voice Companion">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+        <span class="btn-lbl">Talk to MA</span>
+      </button>
+    </div>
+  </div>
+
+
+  <!-- PHONE CONTAINER -->
+  <div class="phone-container" id="phoneContainer">
+    <div class="dynamic-island">
+      <span>9:41</span>
+      <div class="island-cam"></div>
+      <span>5G</span>
+    </div>
+
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>100%</span>
+    </div>
+
+    <div class="confetti-pop" id="confettiPop">Activity Completed!</div>
+
+    <!-- MAIN APP SCROLLABLE VIEWPORT -->
+    <div class="app-screen-viewport" id="appViewport">
+
+      <!-- ==============================================
+           SCREEN 0: AUTH & LOGIN (PHONE / EMAIL OTP)
+           ============================================== -->
+      <div id="view-auth" class="auth-screen-wrap" style="display: none;">
+        <div class="auth-logo-box">
+          <div class="auth-logo-icon">
+            <svg viewBox="0 0 100 100" fill="none" style="width: 42px; height: 42px;">
+              <path d="M50 82 C32 82 18 66 18 50 C18 34 28 24 38 20 C34 32 37 46 45 56 C47 58 50 64 50 82 Z" fill="#FFFFFF"/>
+              <path d="M50 82 C68 82 82 66 82 50 C82 34 72 24 62 20 C66 32 63 46 55 56 C53 58 50 64 50 82 Z" fill="#FFE4E9"/>
+              <path d="M50 22 C42 36 42 50 50 66 C58 50 58 36 50 22 Z" fill="#FFFFFF"/>
+              <circle cx="50" cy="44" r="5" fill="#FF3B69"/>
             </svg>
           </div>
+          <h2 style="font-size: 24px; font-weight: 800; font-family: 'Outfit', sans-serif;">Welcome to Swasth</h2>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Your Daily Maternal Health & Garbh Sanskar Companion</p>
+        </div>
+
+        <div class="auth-tab-row">
+          <div class="auth-tab active" onclick="switchAuthTab('phone')">Phone Number</div>
+          <div class="auth-tab" onclick="switchAuthTab('email')">Email Address</div>
+        </div>
+
+        <div id="authPhoneGroup" style="margin-bottom: 16px;">
+          <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Mobile Number (+91)</label>
+          <input type="tel" id="inputPhone" class="auth-input" placeholder="98765 43210" value="9876543210">
+        </div>
+
+        <div id="authEmailGroup" style="margin-bottom: 16px; display: none;">
+          <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Email Address</label>
+          <input type="email" id="inputEmail" class="auth-input" placeholder="ananya@example.com" value="ananya@swasth.org">
+        </div>
+
+        <button class="auth-btn-primary" onclick="proceedToVerification()">
+          Get One-Time Passcode (OTP)
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
-        <span class="ptt-label">Tap to Speak to Alexa</span>
+
+        <div style="text-align: center; margin: 16px 0 8px; font-size: 11px; color: var(--text-subtle);">— OR FAST-TRACK DEMO —</div>
+
+        <button class="demo-mama-btn" onclick="oneClickDemoLogin()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          Try Live Demo as Ananya (Week 14)
+        </button>
+
+        <p style="font-size: 10px; color: var(--text-subtle); text-align: center; margin-top: 18px;">
+          ABDM & ABHA Compliant. 100% Private On-Device Encrypted Storage.
+        </p>
       </div>
 
-      <!-- Text Utterance Simulator (For typing voice commands) -->
-      <form id="chatForm" class="utterance-form">
-        <div class="input-shell">
-          <span class="prompt-prefix">"Alexa,</span>
-          <input 
-            type="text" 
-            id="chatInput" 
-            placeholder="Maya just nursed for 15 minutes on the left side..." 
-            autocomplete="off"
-            required
-          />
-          <span class="prompt-suffix">"</span>
-          <button type="submit" id="sendBtn" class="send-utterance-btn" title="Send Voice Utterance">
-            <span>Simulate Voice</span>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="22" y1="2" x2="11" y2="13"></line>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-            </svg>
+
+      <!-- ==============================================
+           SCREEN 1: HOME DASHBOARD
+           ============================================== -->
+      <div id="view-home">
+        <!-- TOP APP BAR -->
+        <div class="app-header">
+          <div class="header-user">
+            <div class="user-avatar-wrap" onclick="switchTab('more')">
+              <img src="assets/ananya_profile.png" class="user-avatar-img" alt="Ananya">
+              <div class="user-status-dot"></div>
+            </div>
+            <div class="header-greeting">
+              <span class="greeting-sub">Good Morning,</span>
+              <span class="greeting-name" id="userNameHeader">Ananya Sharma</span>
+            </div>
+          </div>
+          <div class="header-actions">
+            <div class="icon-badge-btn" onclick="openToolSheet('vaccine')" title="Immunization Schedule">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <div class="badge-dot"></div>
+            </div>
+            <div class="icon-badge-btn" onclick="switchTab('ai')" title="Swasth AI">
+              <svg viewBox="0 0 100 100" fill="none" style="width: 20px; height: 20px;">
+                <path d="M50 82 C32 82 18 66 18 50 C18 34 28 24 38 20 C34 32 37 46 45 56 C47 58 50 64 50 82 Z" fill="#FF3B69"/>
+                <path d="M50 82 C68 82 82 66 82 50 C82 34 72 24 62 20 C66 32 63 46 55 56 C53 58 50 64 50 82 Z" fill="#FF7597"/>
+                <path d="M50 22 C42 36 42 50 50 66 C58 50 58 36 50 22 Z" fill="#FF3B69"/>
+                <circle cx="50" cy="44" r="4.5" fill="#FFB088"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- HORIZONTAL WEEK STRIP (1 to 40) -->
+        <div class="week-strip-wrap" id="weekStripContainer"></div>
+
+        <!-- HERO BABY GROWTH CARD -->
+        <div class="hero-growth-card">
+          <div class="card-top-tag">
+            <div class="stage-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 0 1 10 10c0 5.5-4.5 10-10 10S2 17.5 2 12A10 10 0 0 1 12 2z"/></svg>
+              <span id="heroTrimesterText">Trimester 2 · Week 14</span>
+            </div>
+            <div class="day-count-badge" id="heroDayText">Day 98 of 280</div>
+          </div>
+
+          <div class="baby-visual-row">
+            <div class="baby-fruit-3d">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 7v5l3 3"/>
+              </svg>
+            </div>
+            <div class="baby-growth-info">
+              <div class="fruit-title" id="babyFruitName">Peach Size</div>
+              <div class="fruit-analogy" id="babyMilestoneShort">Baby is flexing tiny facial muscles and practicing thumb movements.</div>
+              <div class="metrics-pills-row">
+                <div class="metric-pill">Length: <strong id="babyLengthText">8.7 cm</strong></div>
+                <div class="metric-pill">Weight: <strong id="babyWeightText">43 g</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDER TRACK -->
+          <div class="slider-track-wrap">
+            <div class="slider-label-row">
+              <span>Week 1</span>
+              <span style="color: var(--primary); font-weight: 800;" id="sliderWeekDisplay">Week 14 (Interactive Scrubber)</span>
+              <span>Week 40</span>
+            </div>
+            <input type="range" min="1" max="40" value="14" class="growth-slider" id="growthWeekSlider" oninput="onWeekSliderChange(this.value)">
+          </div>
+        </div>
+
+        <!-- STORY ACTION CIRCLES (OUTLINE VECTOR ICONS) -->
+        <div class="story-section">
+          <div class="story-circle-item" onclick="switchTab('ai')">
+            <div class="story-ring">
+              <div class="story-inner">
+                <svg viewBox="0 0 100 100" fill="none" style="width: 26px; height: 26px;">
+                  <path d="M50 82 C32 82 18 66 18 50 C18 34 28 24 38 20 C34 32 37 46 45 56 C47 58 50 64 50 82 Z" fill="#FF3B69"/>
+                  <path d="M50 82 C68 82 82 66 82 50 C82 34 72 24 62 20 C66 32 63 46 55 56 C53 58 50 64 50 82 Z" fill="#FF7597"/>
+                  <path d="M50 22 C42 36 42 50 50 66 C58 50 58 36 50 22 Z" fill="#FF3B69"/>
+                  <circle cx="50" cy="44" r="4.5" fill="#FFB088"/>
+                </svg>
+              </div>
+            </div>
+            <span class="story-lbl">Swasth AI</span>
+          </div>
+
+          <div class="story-circle-item" onclick="openToolSheet('water')">
+            <div class="story-ring">
+              <div class="story-inner">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2" stroke-linecap="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              </div>
+            </div>
+            <span class="story-lbl">Hydration</span>
+          </div>
+
+          <div class="story-circle-item" onclick="openToolSheet('audio')">
+            <div class="story-ring">
+              <div class="story-inner">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M6 12a6 6 0 0 1 12 0"/><path d="M3 12a9 9 0 0 1 18 0"/></svg>
+              </div>
+            </div>
+            <span class="story-lbl">Om Chant</span>
+          </div>
+
+          <div class="story-circle-item" onclick="switchTab('community')">
+            <div class="story-ring">
+              <div class="story-inner">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF3B69" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+            </div>
+            <span class="story-lbl">Birth Club</span>
+          </div>
+
+          <div class="story-circle-item" onclick="openToolSheet('diet')">
+            <div class="story-ring">
+              <div class="story-inner">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c0 3 0 5-1.5 8.5A7 7 0 0 1 11 20z"/></svg>
+              </div>
+            </div>
+            <span class="story-lbl">Diet Plan</span>
+          </div>
+        </div>
+
+        <!-- TODAY'S SCHEDULE (4Q HABITS) -->
+        <div class="section-heading">
+          <span class="heading-title">Today's Schedule (4Q Habits)</span>
+          <span class="heading-link" onclick="filterActivities('ALL')">View All</span>
+        </div>
+
+        <div class="daily-activities-wrap">
+          <div class="activity-progress-card">
+            <div>
+              <div style="font-size: 13px; font-weight: 800; color: #1E293B;">Daily Garbh Sanskar Routine</div>
+              <div style="font-size: 11px; color: var(--text-muted);" id="activityProgressStats">8 of 12 Activities Completed (67%)</div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="activityProgressBar"></div>
+              </div>
+            </div>
+            <div style="color: var(--primary);">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5h-2v-2h2zm0-4h-2V7h2z"/></svg>
+            </div>
+          </div>
+
+          <!-- Category Filter Strip -->
+          <div class="category-filter-strip">
+            <button class="cat-btn active" onclick="filterActivities('ALL')">All (12)</button>
+            <button class="cat-btn" onclick="filterActivities('SQ')">SQ Spiritual</button>
+            <button class="cat-btn" onclick="filterActivities('IQ')">IQ Intellectual</button>
+            <button class="cat-btn" onclick="filterActivities('EQ')">EQ Emotional</button>
+            <button class="cat-btn" onclick="filterActivities('PQ')">PQ Physical</button>
+          </div>
+
+          <!-- Dynamic List of Activities -->
+          <div id="activitiesListContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+
+        <!-- UPCOMING CLINIC APPOINTMENT -->
+        <div style="margin: 18px 20px 8px; background: #ECFDF5; border: 1.5px solid #A7F3D0; border-radius: 20px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 12px; font-weight: 800; color: #065F46;">PHC Antenatal Care Checkup #2</div>
+            <div style="font-size: 10px; color: #047857; margin-top: 2px;">Carry MCP card · Rampur Primary Health Center</div>
+          </div>
+          <span style="background: #10B981; color: white; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 999px;">In 5 Days</span>
+        </div>
+
+      </div><!-- End view-home -->
+
+
+      <!-- ==============================================
+           SCREEN 2: COMMUNITY BIRTH CLUBS
+           ============================================== -->
+      <div id="view-community" style="display: none;">
+        <div class="app-header">
+          <div>
+            <div style="font-size: 12px; font-weight: 700; color: #10B981; display: flex; align-items: center; gap: 6px;">
+              <span style="width: 8px; height: 8px; background: #10B981; border-radius: 50%;"></span> 9,388 Mothers Online
+            </div>
+            <h2 style="font-size: 20px; font-weight: 800; font-family: 'Outfit', sans-serif;">Maternal Community</h2>
+          </div>
+          <button class="icon-badge-btn" onclick="openNewPostModal()" title="Ask Question">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </button>
         </div>
-      </form>
-    </div>
 
-    <!-- Hidden compatibility chat feed container for existing JS logger -->
-    <div id="chatFeed" style="display: none;" role="log" aria-live="polite"></div>
-  </main>
+        <div class="community-view-wrap">
+          <div class="comm-tabs-strip">
+            <div class="comm-tab-item active" onclick="switchCommTab(this, 'FOR_YOU')">FOR YOU</div>
+            <div class="comm-tab-item" onclick="switchCommTab(this, 'SEPT_2026')">SEPT 2026 MOMS</div>
+            <div class="comm-tab-item" onclick="switchCommTab(this, 'HEALTH')">HEALTH SUPPORT</div>
+          </div>
 
-  <!-- Collapsible Technical Telemetry Drawer: Alexa Directives & MCP Inspector -->
-  <aside class="telemetry-drawer" id="telemetryDrawer">
-    <div class="telemetry-header">
-      <div class="drawer-title">
-        <span class="glow-icon">⚡</span>
-        <span>Alexa+ & MCP Streamable HTTP Telemetry</span>
-      </div>
-      <div class="drawer-actions">
-        <span class="badge" id="toolCallCount">0 calls</span>
-        <button id="closeTelemetryBtn" class="btn-close-drawer" title="Close Drawer">✕</button>
-      </div>
-    </div>
+          <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 14px; padding: 10px 12px; font-size: 11px; color: #1E40AF; display: flex; align-items: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <div><strong>Safe Peer Circle:</strong> Shared experiences for peer support. Always consult PHC doctors for clinical diagnosis.</div>
+          </div>
 
-    <!-- Telemetry Navigation Tabs -->
-    <div class="telemetry-tabs">
-      <button class="tab-btn active" data-tab="toolsTab">⚡ MCP Tool Payloads</button>
-      <button class="tab-btn" data-tab="timelineTab">👶 Maya's Timeline</button>
-      <button class="tab-btn" data-tab="partnerTab">🤝 Partner Board</button>
-    </div>
+          <div id="communityFeedContainer" style="display: flex; flex-direction: column; gap: 12px;"></div>
+        </div>
+      </div><!-- End view-community -->
 
-    <!-- Tab 1: Live MCP Tool Calls Inspector -->
-    <div class="tab-content active" id="toolsTab">
-      <p class="panel-sub">Real-time JSON-RPC 2.0 requests dispatched to FastMCP over Streamable HTTP (2025-11-25)</p>
-      <div class="tool-calls-stream" id="toolCallsStream">
-        <div class="empty-state">No tool calls yet. Speak to Alexa to log a feed, sleep, or partner chore!</div>
-      </div>
-    </div>
 
-    <!-- Tab 2: Baby Maya's Day Timeline -->
-    <div class="tab-content" id="timelineTab">
-      <div class="panel-header-inline">
-        <div class="panel-title">Today's Feeding & Sleep Rhythm</div>
-        <button class="btn-refresh" id="refreshTimelineBtn" title="Refresh data">🔄</button>
-      </div>
-      <div class="timeline-container" id="timelineContainer">
-        <div class="loading">Loading timeline from local SQLite...</div>
-      </div>
-    </div>
+            <!-- ==============================================
+           SCREEN 3: PLANS & TOOLKIT (DAILY SCHEDULES & HEALTH TOOLS)
+           ============================================== -->
+      <div id="view-plans" style="display: none;">
+        <div class="app-header">
+          <div>
+            <span class="greeting-sub">Interactive Utilities & Plans</span>
+            <h2 style="font-size: 20px; font-weight: 800; font-family: 'Outfit', sans-serif;">Toolkit & Daily Plans</h2>
+          </div>
+          <button class="icon-badge-btn" onclick="openToolSheet('vaccine')" title="Immunization Schedule">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </button>
+        </div>
 
-    <!-- Tab 3: Partner Support Board -->
-    <div class="tab-content" id="partnerTab">
-      <div class="panel-header-inline">
-        <div class="panel-title">Family Teamwork Tasks</div>
-        <span class="badge" id="pendingTaskCount">2 pending</span>
-      </div>
-      <p class="panel-sub">Shared support so mom doesn't carry everything alone</p>
+        <!-- Toolkit Banner -->
+        <div style="margin: 0 20px 16px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border-radius: 22px; padding: 18px 20px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25);">
+          <div>
+            <div style="font-size: 18px; font-weight: 800; font-family: 'Outfit', sans-serif;">Daily Health Toolkit</div>
+            <div style="font-size: 11px; opacity: 0.9; margin-top: 2px;">Track hydration, vitals, kicks & sound therapy</div>
+          </div>
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+
+        <!-- 2-Column Vector Tools Grid -->
+        <div class="smart-tools-grid">
+          <div class="tool-tile pastel-cyan" onclick="openToolSheet('water')">
+            <div>
+              <div class="tile-title">Water Hydration</div>
+              <div class="tile-sub" id="toolWaterSubPlans">1,750 / 2,500 ml</div>
+            </div>
+            <div class="tile-icon-svg">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2" stroke-linecap="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+            </div>
+          </div>
+
+          <div class="tool-tile pastel-pink" onclick="openToolSheet('baby_size')">
+            <div>
+              <div class="tile-title">Baby Size</div>
+              <div class="tile-sub">Week 14 · Peach Stage</div>
+            </div>
+            <div class="tile-icon-svg">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E11D48" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+            </div>
+          </div>
+
+          <div class="tool-tile pastel-mint" onclick="openToolSheet('steps')">
+            <div>
+              <div class="tile-title">Daily Steps</div>
+              <div class="tile-sub" id="toolStepsSubPlans">3,840 / 5,000 steps</div>
+            </div>
+            <div class="tile-icon-svg">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round"><path d="M4 16v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2"/><circle cx="12" cy="7" r="3"/></svg>
+            </div>
+          </div>
+
+          <div class="tool-tile pastel-apricot" onclick="openToolSheet('audio')">
+            <div>
+              <div class="tile-title">Om Chanter</div>
+              <div class="tile-sub">432Hz Sound Healing</div>
+            </div>
+            <div class="tile-icon-svg">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M6 12a6 6 0 0 1 12 0"/><path d="M3 12a9 9 0 0 1 18 0"/></svg>
+            </div>
+          </div>
+
+          <div class="tool-tile pastel-yellow" onclick="openToolSheet('kicks')">
+            <div>
+              <div class="tile-title">Kick Counter</div>
+              <div class="tile-sub" id="toolKicksSubPlans">10 kicks recorded</div>
+            </div>
+            <div class="tile-icon-svg">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#CA8A04" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+          </div>
+
+          <div class="tool-tile pastel-lavender" onclick="openToolSheet('vitals')">
+            <div>
+              <div class="tile-title">Health Hub</div>
+              <div class="tile-sub">BP: 118/76 · 62 kg</div>
+            </div>
+            <div class="tile-icon-svg">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+          </div>
+
+          <div class="tool-tile pastel-blue" onclick="openToolSheet('belly')">
+            <div>
+              <div class="tile-title">Belly Size</div>
+              <div class="tile-sub">82 cm circumference</div>
+            </div>
+            <div class="tile-icon-svg">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2" stroke-linecap="round"><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="8" y1="6" x2="8" y2="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="16" y1="6" x2="16" y2="10"/></svg>
+            </div>
+          </div>
+
+          <div class="tool-tile pastel-pink" onclick="openToolSheet('vaccine')">
+            <div>
+              <div class="tile-title">Vaccine Tracker</div>
+              <div class="tile-sub">TT-1 Completed</div>
+            </div>
+            <div class="tile-icon-svg">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E11D48" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- DAILY HABIT ROUTINE IN PLANS -->
+        <div class="section-heading" style="margin-top: 14px;">
+          <span class="heading-title">Daily Garbh Sanskar Plans</span>
+          <span class="heading-link" onclick="filterActivities('ALL')">All Plans</span>
+        </div>
+
+        <div class="daily-activities-wrap">
+          <div class="activity-progress-card">
+            <div>
+              <div style="font-size: 13px; font-weight: 800; color: #1E293B;">Daily Garbh Sanskar Routine</div>
+              <div style="font-size: 11px; color: var(--text-muted);" id="plansProgressStats">8 of 12 Activities Completed (67%)</div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="plansProgressBar" style="width: 67%;"></div>
+              </div>
+            </div>
+            <div style="color: var(--primary);">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5h-2v-2h2zm0-4h-2V7h2z"/></svg>
+            </div>
+          </div>
+
+          <div class="category-filter-strip">
+            <button class="cat-btn active" onclick="filterActivities('ALL')">All (12)</button>
+            <button class="cat-btn" onclick="filterActivities('SQ')">SQ Spiritual</button>
+            <button class="cat-btn" onclick="filterActivities('IQ')">IQ Intellectual</button>
+            <button class="cat-btn" onclick="filterActivities('EQ')">EQ Emotional</button>
+            <button class="cat-btn" onclick="filterActivities('PQ')">PQ Physical</button>
+          </div>
+
+          <div id="plansActivitiesContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+      </div><!-- End view-plans -->
+
+
+            <!-- ==============================================
+           SCREEN 4: SESSION & LONG-TERM CARE ENGAGEMENT
+           (BASED ON REFERENCE IMAGES 32, 33, 34, 35, 36)
+           ============================================== -->
+      <div id="view-ai" style="display: none;">
+        <div class="app-header">
+          <div>
+            <div style="font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.8px;">
+              Long-Term Care Continuity · 1,000 Days
+            </div>
+            <h2 style="font-size: 20px; font-weight: 800; font-family: 'Outfit', sans-serif;">Maternal Recovery & Sessions</h2>
+          </div>
+          <button class="icon-badge-btn" onclick="openToolSheet('audio')" title="Om Chanter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M6 12a6 6 0 0 1 12 0"/><path d="M3 12a9 9 0 0 1 18 0"/></svg>
+          </button>
+        </div>
+
+        <div class="session-container">
+          
+          <!-- SUB-TABS STRIP (PROGRAMS, CIRCUIT, MOBILITY, NUTRITION, AI) -->
+          <div class="session-tabs-strip">
+            <button class="session-tab-btn active" id="subtabBtn-programs" onclick="switchSessionSubTab('programs')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+              My Programs
+            </button>
+            <button class="session-tab-btn" id="subtabBtn-circuit" onclick="switchSessionSubTab('circuit')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Timed Circuit
+            </button>
+            <button class="session-tab-btn" id="subtabBtn-mobility" onclick="switchSessionSubTab('mobility')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 0 1 5 5c0 3-2 5-5 9-3-4-5-6-5-9a5 5 0 0 1 5-5z"/></svg>
+              Mobility & Recovery
+            </button>
+            <button class="session-tab-btn" id="subtabBtn-nutrition" onclick="switchSessionSubTab('nutrition')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c0 3 0 5-1.5 8.5A7 7 0 0 1 11 20z"/></svg>
+              150+ Recipes
+            </button>
+            <button class="session-tab-btn" id="subtabBtn-ai" onclick="switchSessionSubTab('ai')">
+              <svg viewBox="0 0 100 100" fill="none" style="width: 14px; height: 14px;">
+                <circle cx="50" cy="50" r="40" fill="#FF3B69"/>
+                <circle cx="50" cy="50" r="20" fill="white"/>
+              </svg>
+              Swasth AI
+            </button>
+          </div>
+
+          <!-- ==============================================
+               SUB-VIEW 1: PROGRAMS (MATCHING REF 32 & 35)
+               ============================================== -->
+          <div id="sessionView-programs">
+            
+            <!-- FEATURED HERO PROGRAM CARD -->
+            <div class="featured-program-card">
+              <div class="featured-program-top">
+                <span class="program-stage-pill">Trimester 2 · Week 14</span>
+                <div class="program-card-badge">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2a5 5 0 0 1 5 5c0 3-2 5-5 9-3-4-5-6-5-9a5 5 0 0 1 5-5z"/></svg>
+                </div>
+              </div>
+              <div class="program-title">Core Basics & Pelvic Floor</div>
+              <div class="program-sub">Lay a solid foundation with 6 self-paced levels designed for prenatal posture and diastasis prevention.</div>
+              <div class="program-card-footer">
+                <span style="font-size: 11px; color: #94A3B8; font-weight: 600;">20 Mins · Self-Paced</span>
+                <button class="btn-start-session" onclick="startGuidedCircuit()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  Start Guided Session
+                </button>
+              </div>
+            </div>
+
+            <!-- ADD TO YOUR ROUTINE -->
+            <div style="font-size: 13px; font-weight: 800; color: #1E293B; margin: 16px 2px 8px;">Add To Your Routine</div>
+            <div class="routine-tiles-strip">
+              <div class="routine-tile-item" onclick="openExerciseDetail('pelvic')">
+                <div class="routine-tile-icon" style="background: #FFE4E9; color: #FF3B69;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a5 5 0 0 1 5 5c0 3-2 5-5 9-3-4-5-6-5-9a5 5 0 0 1 5-5z"/></svg>
+                </div>
+                <div class="routine-tile-title">Pelvic Core</div>
+                <div class="routine-tile-sub">Custom Workouts</div>
+              </div>
+
+              <div class="routine-tile-item" onclick="openExerciseDetail('stretch')">
+                <div class="routine-tile-icon" style="background: #FEF3C7; color: #D97706;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/></svg>
+                </div>
+                <div class="routine-tile-title">Slam Stretch</div>
+                <div class="routine-tile-sub">Recover & Release</div>
+              </div>
+
+              <div class="routine-tile-item" onclick="openExerciseDetail('walk')">
+                <div class="routine-tile-icon" style="background: #E0F2FE; color: #0284C7;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
+                </div>
+                <div class="routine-tile-title">Brisk Walk</div>
+                <div class="routine-tile-sub">Gentle Cardio</div>
+              </div>
+            </div>
+
+            <!-- PROGRAMS FOR EVERY STAGE (MATCHING REF 35) -->
+            <div style="font-size: 13px; font-weight: 800; color: #1E293B; margin: 18px 2px 8px;">Programs For Every Stage</div>
+            <div class="stages-grid-6">
+              <div class="stage-card-box" onclick="startStageProgram('Beginner')">
+                <div class="stage-icon-circle" style="background: #FFF1F4; color: #FF3B69;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+                </div>
+                <div>
+                  <div class="stage-name-title">Beginner</div>
+                  <div class="stage-sub-info">Foundation Core</div>
+                </div>
+              </div>
+
+              <div class="stage-card-box" onclick="startStageProgram('Intermediate')">
+                <div class="stage-icon-circle" style="background: #EDE9FE; color: #7C3AED;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div>
+                  <div class="stage-name-title">Intermediate</div>
+                  <div class="stage-sub-info">Banded Flows</div>
+                </div>
+              </div>
+
+              <div class="stage-card-box" onclick="startStageProgram('Advanced')">
+                <div class="stage-icon-circle" style="background: #FEF3C7; color: #D97706;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <div>
+                  <div class="stage-name-title">Advanced</div>
+                  <div class="stage-sub-info">Endurance Build</div>
+                </div>
+              </div>
+
+              <div class="stage-card-box" onclick="startStageProgram('Pregnancy')">
+                <div class="stage-icon-circle" style="background: #E0F2FE; color: #0284C7;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </div>
+                <div>
+                  <div class="stage-name-title">Pregnancy</div>
+                  <div class="stage-sub-info">Trimester Safe</div>
+                </div>
+              </div>
+
+              <div class="stage-card-box" onclick="startStageProgram('Barre')">
+                <div class="stage-icon-circle" style="background: #FCE7F3; color: #DB2777;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                </div>
+                <div>
+                  <div class="stage-name-title">Barre</div>
+                  <div class="stage-sub-info">Balance & Posture</div>
+                </div>
+              </div>
+
+              <div class="stage-card-box" onclick="startStageProgram('Core')">
+                <div class="stage-icon-circle" style="background: #DCFCE7; color: #16A34A;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                </div>
+                <div>
+                  <div class="stage-name-title">Core Rebuild</div>
+                  <div class="stage-sub-info">Diastasis Safe</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- End sessionView-programs -->
+
+
+          <!-- ==============================================
+               SUB-VIEW 2: TIMED INTERVALS CIRCUIT (REF 33)
+               ============================================== -->
+          <div id="sessionView-circuit" style="display: none;">
+            <div class="circuit-player-card">
+              <div class="circuit-top-progress">
+                <div>
+                  <span style="font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase;">Circuit 2 of 3</span>
+                  <div style="font-size: 16px; font-weight: 800; color: #1E293B;">Timed Intervals · 20:14 Min</div>
+                </div>
+                <button onclick="skipCircuit()" style="background: none; border: none; font-size: 11px; font-weight: 700; color: #64748B; cursor: pointer;">Skip Circuit ›</button>
+              </div>
+
+              <div class="circuit-progress-track">
+                <div class="circuit-progress-fill" id="circuitProgressFill"></div>
+              </div>
+
+              <div class="circuit-rounds-row">
+                <div class="round-step-pill completed">✓</div>
+                <div class="round-step-pill active">2</div>
+                <div class="round-step-pill">3</div>
+                <span style="font-size: 11px; font-weight: 700; color: #64748B; margin-left: auto;">3 Rounds of 9 Moves</span>
+              </div>
+
+              <!-- Exercise Demonstration Box -->
+              <div style="background: linear-gradient(135deg, #FFF1F4 0%, #FFE4E9 100%); border-radius: 20px; padding: 20px; text-align: center; margin-bottom: 14px; border: 1.5px solid rgba(255, 59, 105, 0.2);">
+                <div style="font-size: 12px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">Active Exercise</div>
+                <div style="font-size: 20px; font-weight: 800; color: #831843; font-family: 'Outfit', sans-serif; margin-top: 4px;" id="activeMoveTitle">Resistance Band Step Back</div>
+                <div style="font-size: 12px; color: #475569; margin: 4px 0 14px;">10 Reps each leg · Keep pelvis neutral and exhale on extension</div>
+                
+                <div style="font-size: 36px; font-weight: 800; color: var(--primary); font-family: monospace;" id="circuitTimerDisplay">00:45</div>
+                
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 14px;">
+                  <button class="btn-start-session" id="btnCircuitTimer" onclick="toggleCircuitTimer()" style="padding: 10px 24px;">
+                    Pause Interval
+                  </button>
+                  <button onclick="nextCircuitMove()" style="background: white; border: 1.5px solid var(--border-soft); color: #1E293B; font-weight: 800; font-size: 12px; padding: 10px 18px; border-radius: 999px; cursor: pointer;">
+                    Next Move ›
+                  </button>
+                </div>
+              </div>
+
+              <!-- Move List -->
+              <div class="circuit-move-box active">
+                <div>
+                  <div class="move-name-txt">MOVE 01: Band Step Back</div>
+                  <div class="move-sub-txt">Focus on glute engagement & breath</div>
+                </div>
+                <span class="move-reps-badge">10 REPS</span>
+              </div>
+
+              <div class="circuit-move-box">
+                <div>
+                  <div class="move-name-txt">MOVE 02: Prenatal Squat with Band</div>
+                  <div class="move-sub-txt">Keep knees tracked over toes</div>
+                </div>
+                <span class="move-reps-badge">10 REPS</span>
+              </div>
+
+              <div class="circuit-move-box">
+                <div>
+                  <div class="move-name-txt">MOVE 03: Glute Bridge & Release</div>
+                  <div class="move-sub-txt">Inhale to relax, exhale to lift</div>
+                </div>
+                <span class="move-reps-badge">10 REPS</span>
+              </div>
+            </div>
+          </div><!-- End sessionView-circuit -->
+
+
+          <!-- ==============================================
+               SUB-VIEW 3: MOBILITY & RECOVERY (REF 34)
+               ============================================== -->
+          <div id="sessionView-mobility" style="display: none;">
+            
+            <div style="font-size: 13px; font-weight: 800; color: #1E293B; margin-bottom: 8px;">By Specialist & Instructor</div>
+            <div class="instructors-strip-scroll">
+              <div class="instructor-item-box" onclick="filterByInstructor('Dr. Sneha')">
+                <div class="instructor-avatar-circle">
+                  <div class="instructor-avatar-inner">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  </div>
+                </div>
+                <div class="instructor-name">Dr. Sneha</div>
+                <div class="instructor-tag">Physio</div>
+              </div>
+
+              <div class="instructor-item-box" onclick="filterByInstructor('Kavita')">
+                <div class="instructor-avatar-circle">
+                  <div class="instructor-avatar-inner">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4"/><path d="M12 18v4"/></svg>
+                  </div>
+                </div>
+                <div class="instructor-name">Kavita</div>
+                <div class="instructor-tag">Yoga</div>
+              </div>
+
+              <div class="instructor-item-box" onclick="filterByInstructor('Dr. Aditi')">
+                <div class="instructor-avatar-circle">
+                  <div class="instructor-avatar-inner">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 0 1 5 5c0 3-2 5-5 9-3-4-5-6-5-9a5 5 0 0 1 5-5z"/></svg>
+                  </div>
+                </div>
+                <div class="instructor-name">Dr. Aditi</div>
+                <div class="instructor-tag">Pelvic</div>
+              </div>
+
+              <div class="instructor-item-box" onclick="filterByInstructor('Pooja')">
+                <div class="instructor-avatar-circle">
+                  <div class="instructor-avatar-inner">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                  </div>
+                </div>
+                <div class="instructor-name">Pooja</div>
+                <div class="instructor-tag">Breath</div>
+              </div>
+
+              <div class="instructor-item-box" onclick="filterByInstructor('Meera')">
+                <div class="instructor-avatar-circle">
+                  <div class="instructor-avatar-inner">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 8 21 9 17 14 18 20 12 17 6 20 7 14 3 9 9 8 12 2"/></svg>
+                  </div>
+                </div>
+                <div class="instructor-name">Meera</div>
+                <div class="instructor-tag">Mobility</div>
+              </div>
+            </div>
+
+            <div style="font-size: 13px; font-weight: 800; color: #1E293B; margin: 16px 2px 8px;">Recovery By Category</div>
+            <div class="stages-grid-6">
+              <div class="stage-card-box" onclick="openExerciseDetail('pelvic')">
+                <div class="stage-icon-circle" style="background: #FEF3C7; color: #D97706;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 0 1 5 5c0 3-2 5-5 9-3-4-5-6-5-9a5 5 0 0 1 5-5z"/></svg>
+                </div>
+                <div>
+                  <div class="stage-name-title">Pelvic Release</div>
+                  <div class="stage-sub-info">Floor Relaxation</div>
+                </div>
+              </div>
+
+              <div class="stage-card-box" onclick="openExerciseDetail('mobility')">
+                <div class="stage-icon-circle" style="background: #E0F2FE; color: #0284C7;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/></svg>
+                </div>
+                <div>
+                  <div class="stage-name-title">Mobility</div>
+                  <div class="stage-sub-info">Hip Range of Motion</div>
+                </div>
+              </div>
+
+              <div class="stage-card-box" onclick="openExerciseDetail('yoga')">
+                <div class="stage-icon-circle" style="background: #FCE7F3; color: #DB2777;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <div>
+                  <div class="stage-name-title">Garbh Yoga</div>
+                  <div class="stage-sub-info">Grounding Flows</div>
+                </div>
+              </div>
+
+              <div class="stage-card-box" onclick="openExerciseDetail('myofascial')">
+                <div class="stage-icon-circle" style="background: #EDE9FE; color: #7C3AED;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+                </div>
+                <div>
+                  <div class="stage-name-title">Myofascial</div>
+                  <div class="stage-sub-info">Lower Back Relief</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- End sessionView-mobility -->
+
+
+          <!-- ==============================================
+               SUB-VIEW 4: NUTRITION & 150+ RECIPES (REF 36)
+               ============================================== -->
+          <div id="sessionView-nutrition" style="display: none;">
+            
+            <div class="nutrition-stats-header">
+              <div>
+                <div class="nutri-stat-num">2 / 30</div>
+                <div class="nutri-stat-lbl">Lessons</div>
+              </div>
+              <div style="border-left: 1px solid #334155;"></div>
+              <div>
+                <div class="nutri-stat-num">2 / 30</div>
+                <div class="nutri-stat-lbl">Challenges</div>
+              </div>
+              <div style="border-left: 1px solid #334155;"></div>
+              <div>
+                <div class="nutri-stat-num">150+</div>
+                <div class="nutri-stat-lbl">Recipes</div>
+              </div>
+            </div>
+
+            <!-- THIS WEEK'S LESSON -->
+            <div class="weekly-lesson-box">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 10px; font-weight: 800; color: var(--primary); text-transform: uppercase;">This Week's Challenge</span>
+                <span style="font-size: 11px; font-weight: 700; color: #059669;">Day 2 of 7</span>
+              </div>
+              <div style="font-size: 15px; font-weight: 800; color: #1E293B; margin-top: 4px;">Hydration & Natural Electrolyte Balance</div>
+              <p style="font-size: 11px; color: #64748B; margin-top: 2px;">Drink 2,500ml water + 1 tender coconut or lemon-mint water daily.</p>
+              
+              <div class="lesson-days-row">
+                <div class="lesson-day-check done">✓</div>
+                <div class="lesson-day-check done">✓</div>
+                <div class="lesson-day-check" onclick="toggleLessonDay(this)">3</div>
+                <div class="lesson-day-check" onclick="toggleLessonDay(this)">4</div>
+                <div class="lesson-day-check" onclick="toggleLessonDay(this)">5</div>
+                <div class="lesson-day-check" onclick="toggleLessonDay(this)">6</div>
+                <div class="lesson-day-check" onclick="toggleLessonDay(this)">7</div>
+              </div>
+            </div>
+
+            <!-- RECIPES GRID -->
+            <div style="font-size: 13px; font-weight: 800; color: #1E293B; margin-bottom: 8px;">150+ Cultural Maternal Recipes</div>
+            <div class="recipe-cards-grid">
+              <div class="recipe-card-item" onclick="openRecipeModal('moong')">
+                <div>
+                  <div class="recipe-title">Sprouted Moong & Pomegranate Salad</div>
+                  <span class="recipe-benefit-tag">Folate & Iron Boost</span>
+                </div>
+                <span style="font-size: 10px; color: var(--primary); font-weight: 700;">View Recipe ›</span>
+              </div>
+
+              <div class="recipe-card-item" onclick="openRecipeModal('kheer')">
+                <div>
+                  <div class="recipe-title">Saffron Almond Golden Milk</div>
+                  <span class="recipe-benefit-tag">Calcium & Sleep</span>
+                </div>
+                <span style="font-size: 10px; color: var(--primary); font-weight: 700;">View Recipe ›</span>
+              </div>
+
+              <div class="recipe-card-item" onclick="openRecipeModal('ragi')">
+                <div>
+                  <div class="recipe-title">Steamed Ragi & Apple Mash</div>
+                  <span class="recipe-benefit-tag">Weaning Phase 1</span>
+                </div>
+                <span style="font-size: 10px; color: var(--primary); font-weight: 700;">View Recipe ›</span>
+              </div>
+
+              <div class="recipe-card-item" onclick="openRecipeModal('methi')">
+                <div>
+                  <div class="recipe-title">Methi & Flaxseed Thepla</div>
+                  <span class="recipe-benefit-tag">Digestion & Fiber</span>
+                </div>
+                <span style="font-size: 10px; color: var(--primary); font-weight: 700;">View Recipe ›</span>
+              </div>
+            </div>
+
+          </div><!-- End sessionView-nutrition -->
+
+
+          <!-- ==============================================
+               SUB-VIEW 5: SWASTH AI ASSISTANT CHAT
+               ============================================== -->
+          <div id="sessionView-ai" style="display: none;">
+            <div class="ai-hero-banner">
+              <div class="ai-logo-badge">
+                <svg viewBox="0 0 100 100" fill="none" style="width: 32px; height: 32px;">
+                  <path d="M50 82 C32 82 18 66 18 50 C18 34 28 24 38 20 C34 32 37 46 45 56 C47 58 50 64 50 82 Z" fill="#FFFFFF"/>
+                  <path d="M50 82 C68 82 82 66 82 50 C82 34 72 24 62 20 C66 32 63 46 55 56 C53 58 50 64 50 82 Z" fill="#FFE4E9"/>
+                  <path d="M50 22 C42 36 42 50 50 66 C58 50 58 36 50 22 Z" fill="#FFFFFF"/>
+                  <circle cx="50" cy="44" r="5" fill="#FF3B69"/>
+                </svg>
+              </div>
+              <div style="font-size: 16px; font-weight: 800; color: #831843;">Swasth AI Companion</div>
+              <div style="font-size: 12px; color: #475569; margin-top: 4px;">
+                Ask about workout modifications, pelvic floor comfort, or cultural recipes.
+              </div>
+
+              <div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 12px;">
+                <button class="prompt-chip" onclick="askAiQuestion('Which pelvic stretches are safest for Week 14?')">Week 14 Stretches</button>
+                <button class="prompt-chip" onclick="askAiQuestion('Maya just nursed for 15 minutes on the left side')">🍼 Log 15m Nursing</button>
+                <button class="prompt-chip" onclick="askAiQuestion('Baby Maya slept from 1pm to 2:30pm in her crib')">💤 Slept 1pm-2:30pm</button>
+                <button class="prompt-chip" onclick="askAiQuestion('Assign task for partner to sterilize night bottles')">🤝 Assign Partner Chore</button>
+                <button class="prompt-chip" onclick="askAiQuestion('I feel exhausted and overwhelmed today')">💛 I Feel Exhausted</button>
+                <button class="prompt-chip" onclick="askAiQuestion('I have severe abdominal pain and bleeding')">Check Emergency</button>
+              </div>
+            </div>
+
+            <div class="chat-messages-box" id="aiChatBox"></div>
+
+            <div class="chat-input-bar">
+              <input type="text" id="aiInput" class="chat-input-field" placeholder="Ask about symptoms, feeding, or speak to MA..." onkeydown="if(event.key==='Enter') sendAiMessage()">
+              <button class="chat-mic-btn" id="voiceMicBtn" onclick="toggleVoiceInput()" title="Voice input (Web Speech API)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              </button>
+              <button class="chat-send-btn" onclick="sendAiMessage()" title="Send">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div><!-- End sessionView-ai -->
+
+        </div>
+      </div><!-- End view-ai (Session) -->
+
+
+            <!-- ==============================================
+           SCREEN 5: MORE / SETTINGS (MATCHING REF media_1791234426439)
+           ============================================== -->
+      <div id="view-more" style="display: none;">
+        <div class="settings-view-wrap">
+          
+          <!-- TOP HEADER WITH PINK CIRCULAR BACK BUTTON & TITLE -->
+          <div class="settings-header-row">
+            <button class="settings-back-btn" onclick="switchTab('home')" title="Back to Home">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <h2 class="settings-title">Settings</h2>
+          </div>
+
+          <!-- GROUP 1: GENERAL -->
+          <div class="settings-group-label">General</div>
+          <div class="settings-card">
+            <div class="settings-row" onclick="toggleUnits()">
+              <div class="settings-row-left">
+                <!-- Scale / Balance icon badge -->
+                <div class="settings-icon-badge" style="background: #EEF2FF; color: #6366F1;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="3" x2="12" y2="21"></line>
+                    <polyline points="4 7 12 5 20 7"></polyline>
+                    <polyline points="1 13 4 7 7 13"></polyline>
+                    <polyline points="17 13 20 7 23 13"></polyline>
+                    <circle cx="4" cy="13" r="3"></circle>
+                    <circle cx="20" cy="13" r="3"></circle>
+                  </svg>
+                </div>
+                <div class="settings-label-box">
+                  <span class="settings-row-label">Units</span>
+                </div>
+              </div>
+              <div class="settings-row-right">
+                <span id="currentUnitsLabel" style="color: #64748B;">Kg/Cm</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" class="settings-chevron"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 2: REMINDERS -->
+          <div class="settings-group-label">Reminders</div>
+          <div class="settings-card">
+            <!-- Notifications Toggle -->
+            <div class="settings-row">
+              <div class="settings-row-left">
+                <!-- Bell icon badge -->
+                <div class="settings-icon-badge" style="background: #E0F2FE; color: #0284C7;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                  </svg>
+                </div>
+                <div class="settings-label-box">
+                  <span class="settings-row-label">Notifications</span>
+                </div>
+              </div>
+              <div class="settings-row-right">
+                <label class="ios-switch">
+                  <input type="checkbox" id="toggleNotifications" checked onchange="onNotificationToggle(this.checked)">
+                  <span class="ios-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Vibrations Toggle -->
+            <div class="settings-row">
+              <div class="settings-row-left">
+                <!-- Speaker / Vibration badge -->
+                <div class="settings-icon-badge" style="background: #FFEDD5; color: #EA580C;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                  </svg>
+                </div>
+                <div class="settings-label-box">
+                  <span class="settings-row-label">Vibrations</span>
+                </div>
+              </div>
+              <div class="settings-row-right">
+                <label class="ios-switch">
+                  <input type="checkbox" id="toggleVibrations" checked onchange="onVibrationToggle(this.checked)">
+                  <span class="ios-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Manage Notifications -->
+            <div class="settings-row" onclick="openNotificationSettingsModal()">
+              <div class="settings-row-left">
+                <!-- Alarm / Bell badge -->
+                <div class="settings-icon-badge" style="background: #FEF3C7; color: #D97706;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="13" r="8"></circle>
+                    <path d="M12 9v4l2 2"></path>
+                    <path d="m5 3 2 2"></path>
+                    <path d="m19 3-2 2"></path>
+                  </svg>
+                </div>
+                <div class="settings-label-box">
+                  <span class="settings-row-label">Manage Notifications</span>
+                  <span class="settings-row-sub">Advanced Notification Settings</span>
+                </div>
+              </div>
+              <div class="settings-row-right">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" class="settings-chevron"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 3: APP -->
+          <div class="settings-group-label">App</div>
+          <div class="settings-card">
+            <!-- Help And Feedback -->
+            <div class="settings-row" onclick="openHelpFeedbackModal()">
+              <div class="settings-row-left">
+                <!-- Feedback document / bubble badge -->
+                <div class="settings-icon-badge" style="background: #FCE7F3; color: #DB2777;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </div>
+                <div class="settings-label-box">
+                  <span class="settings-row-label">Help And Feedback</span>
+                </div>
+              </div>
+              <div class="settings-row-right">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" class="settings-chevron"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+
+            <!-- Open Source Licenses -->
+            <div class="settings-row" onclick="openLicensesModal()">
+              <div class="settings-row-left">
+                <!-- Code bracket badge -->
+                <div class="settings-icon-badge" style="background: #E0F2FE; color: #0284C7;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                  </svg>
+                </div>
+                <div class="settings-label-box">
+                  <span class="settings-row-label">Open Source Licenses</span>
+                </div>
+              </div>
+              <div class="settings-row-right">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" class="settings-chevron"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+
+            <!-- Help Us Translate -->
+            <div class="settings-row" onclick="openTranslateModal()">
+              <div class="settings-row-left">
+                <!-- Translation A/文 badge -->
+                <div class="settings-icon-badge" style="background: #EDE9FE; color: #7C3AED;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m5 8 6 6"></path>
+                    <path d="m4 14 6-6 2-3"></path>
+                    <path d="M2 5h12"></path>
+                    <path d="M7 2h1"></path>
+                    <path d="m22 22-5-10-5 10"></path>
+                    <path d="M14 18h6"></path>
+                  </svg>
+                </div>
+                <div class="settings-label-box">
+                  <span class="settings-row-label">Help Us Translate</span>
+                </div>
+              </div>
+              <div class="settings-row-right">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" class="settings-chevron"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+
+            <!-- Data Protection -->
+            <div class="settings-row" onclick="openDataProtectionModal()">
+              <div class="settings-row-left">
+                <!-- Shield badge -->
+                <div class="settings-icon-badge" style="background: #D1FAE5; color: #059669;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                </div>
+                <div class="settings-label-box">
+                  <span class="settings-row-label">Data Protection</span>
+                </div>
+              </div>
+              <div class="settings-row-right">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" class="settings-chevron"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- USER PROFILE CARD IN SETTINGS -->
+          <div class="settings-group-label">Account</div>
+          <div class="settings-card" style="padding: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="assets/ananya_profile.png" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" alt="Ananya">
+                <div>
+                  <div style="font-size: 15px; font-weight: 800; color: #1E293B;">Ananya Sharma</div>
+                  <div style="font-size: 11px; color: #64748B;">Week 14 · ABHA: 91-8842-1094-8831</div>
+                </div>
+              </div>
+              <span style="font-size: 10px; background: #EEF2FF; color: #4338CA; font-weight: 800; padding: 4px 10px; border-radius: 999px;">Consent Verified</span>
+            </div>
+          </div>
+
+          <button onclick="switchTab('auth')" style="background: #FEE2E2; color: #B91C1C; border: none; padding: 13px; border-radius: 18px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out / Switch Account
+          </button>
+
+        </div>
+      </div><!-- End view-more -->
+
+    </div><!-- End app-screen-viewport -->
+
+
+    <!-- ========================================================
+         NAVIGATION DOCK: 1. Home | 2. Plans | 3. Clubs | 4. Session | 5. More
+         ======================================================== -->
+    <div class="reference-nav-dock" id="bottomDock">
       
-      <form id="addTaskForm" class="add-task-form">
-        <input type="text" id="newTaskInput" placeholder="Assign task (e.g. Sterilize bottles)..." required />
-        <button type="submit" class="btn-add">+</button>
-      </form>
+      <!-- 1. Home (DEFAULT ACTIVE TAB) -->
+      <button class="ref-nav-tab active" id="tabBtn-home" onclick="switchTab('home')">
+        <div class="tab-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <span class="tab-label">Home</span>
+      </button>
 
-      <ul class="partner-task-list" id="partnerTaskList">
-        <li class="loading">Loading partner tasks...</li>
-      </ul>
+      <!-- 2. Plans (Toolkit & Daily Schedules) -->
+      <button class="ref-nav-tab" id="tabBtn-plans" onclick="switchTab('plans')">
+        <div class="tab-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="3" width="16" height="18" rx="4"/>
+            <path d="M8 3v7l4-2.5 4 2.5V3"/>
+          </svg>
+        </div>
+        <span class="tab-label">Plans</span>
+      </button>
+
+      <!-- 3. Clubs (Hyperlocal Birth Clubs) -->
+      <button class="ref-nav-tab" id="tabBtn-community" onclick="switchTab('community')">
+        <div class="tab-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <span class="tab-label">Clubs</span>
+      </button>
+
+      <!-- 4. Session / AI -->
+      <button class="ref-nav-tab" id="tabBtn-ai" onclick="switchTab('ai')">
+        <div class="tab-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <span class="tab-label">Session</span>
+      </button>
+
+      <!-- 5. More (Settings & ABHA Privacy) -->
+      <button class="ref-nav-tab" id="tabBtn-more" onclick="switchTab('more')">
+        <div class="tab-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="2.5"/>
+            <rect x="14" y="3" width="7" height="7" rx="2.5"/>
+            <rect x="3" y="14" width="7" height="7" rx="2.5"/>
+            <path d="M17.5 14v7"/>
+            <path d="M14 17.5h7"/>
+          </svg>
+        </div>
+        <span class="tab-label">More</span>
+      </button>
+
+    </div><!-- End reference-nav-dock -->
+
+
+    <!-- APP BOTTOM SHEET MODAL -->
+    <div class="app-bottom-sheet" id="bottomSheet">
+      <div class="sheet-handle" onclick="closeToolSheet()"></div>
+      <div id="sheetContent"></div>
     </div>
 
-    <!-- SEP-1865 MCP Apps Card Preview Area -->
-    <div class="mcp-app-preview-card" id="mcpAppPreviewContainer" style="display: none;">
-      <div class="preview-header">
-        <span class="preview-badge">✨ APL / MCP App UI</span>
-        <span class="preview-uri" id="previewUri">ui://ma/baby-summary-card</span>
-      </div>
-      <div class="iframe-wrapper">
-        <iframe id="mcpAppIframe" sandbox="allow-scripts allow-forms allow-same-origin" src="about:blank"></iframe>
-      </div>
-    </div>
-  </aside>
+  </div><!-- End phone-container -->
 
-  <script src="app.js?v=echo_show_1"></script>
+
+  <!-- ==============================================
+       JAVASCRIPT LOGIC & SQLITE INTEGRATION
+       ============================================== -->
+  <script>
+    let db = null;
+    let currentUser = {
+      name: "Ananya Sharma",
+      week: 14,
+      authType: "phone",
+      identifier: "+91 98765 43210"
+    };
+
+    async function initSqliteEngine() {
+      try {
+        if (typeof initSqlJs === 'function') {
+          const SQL = await initSqlJs({
+            locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+          });
+          
+          const savedDb = localStorage.getItem('swasth_sqlite_db');
+          if (savedDb) {
+            const uInt8Array = new Uint8Array(JSON.parse(savedDb));
+            db = new SQL.Database(uInt8Array);
+          } else {
+            db = new SQL.Database();
+            setupDatabaseSchema();
+            seedDefaultData();
+            persistDatabase();
+          }
+        } else {
+          setupFallbackDb();
+        }
+      } catch (err) {
+        console.error("SQLite initialization error:", err);
+        setupFallbackDb();
+      }
+
+      renderWeekStrip();
+      updateGrowthCard(14);
+      loadActivities();
+      loadCommunityPosts();
+      loadAiChat();
+    }
+
+    function setupDatabaseSchema() {
+      db.run(`
+        CREATE TABLE IF NOT EXISTS users (
+          id INTEGER PRIMARY KEY,
+          auth_type TEXT,
+          identifier TEXT,
+          name TEXT,
+          due_date TEXT,
+          current_week INTEGER,
+          abha_id TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS daily_activities (
+          id INTEGER PRIMARY KEY,
+          category TEXT,
+          icon TEXT,
+          title TEXT,
+          subtitle TEXT,
+          duration TEXT,
+          is_completed INTEGER
+        );
+
+        CREATE TABLE IF NOT EXISTS smart_tools_logs (
+          id INTEGER PRIMARY KEY,
+          tool_name TEXT,
+          value TEXT,
+          unit TEXT,
+          logged_at TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS community_posts (
+          id INTEGER PRIMARY KEY,
+          author_name TEXT,
+          week_badge TEXT,
+          category TEXT,
+          question_text TEXT,
+          likes_count INTEGER,
+          comments_count INTEGER,
+          created_at TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS baby_milestones (
+          week_num INTEGER PRIMARY KEY,
+          fruit_name TEXT,
+          length_cm REAL,
+          weight_g REAL,
+          milestone_title TEXT,
+          milestone_desc TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS ai_chat (
+          id INTEGER PRIMARY KEY,
+          sender TEXT,
+          text TEXT,
+          timestamp TEXT
+        );
+      `);
+    }
+
+    function seedDefaultData() {
+      db.run(`INSERT INTO users VALUES (1, 'phone', '+91 98765 43210', 'Ananya Sharma', '2026-09-18', 14, '91-8842-1094-8831');`);
+
+      const acts = [
+        [1, 'SQ', 'lotus', 'Morning Om Chanting & Gayatri Raga', '10 mins of calming harmonic resonance for baby', '10 min', 1],
+        [2, 'PQ', 'movement', 'Pelvic Butterfly & Gentle Prenatal Stretches', 'Improves circulation and reduces lower back stiffness', '15 min', 1],
+        [3, 'IQ', 'bulb', 'Prenatal Brain Puzzle & Linguistic Cadence', 'Cognitive stimulation and soothing rhythmic cadence', '10 min', 1],
+        [4, 'EQ', 'heart', 'Partner Belly Touch & Bonding Conversation', 'Father speaks to baby to recognize vocal pitch', '12 min', 1],
+        [5, 'PQ', 'drop', 'Morning Hydration Goal (500ml warm water)', 'Aids amniotic fluid replenishment', '5 min', 1],
+        [6, 'SQ', 'book', 'Garbh Sanskar Audio Narrative: Prahlad', 'Cultural stories of courage and peace', '15 min', 1],
+        [7, 'EQ', 'pen', 'Positive Affirmation Journaling', 'Emotional equilibrium and stress reduction', '8 min', 1],
+        [8, 'PQ', 'leaf', 'Sprouted Moong & Sesame Snack', 'Natural dietary folate and iron boost', '10 min', 1],
+        [9, 'IQ', 'sound', 'Kalyani Raga Listening Session', 'Acoustic tranquility for fetal auditory neurons', '20 min', 0],
+        [10, 'SQ', 'breathe', 'Evening Deep Breathing & Gratitude', 'Slow diaphragmatic relaxation', '10 min', 0],
+        [11, 'PQ', 'walk', 'Evening 1,500 Steps Walk', 'Gentle post-dinner stroll', '20 min', 0],
+        [12, 'EQ', 'sleep', 'Lullaby Humming Before Sleep', 'Warm bedtime mother-infant emotional bonding', '10 min', 0]
+      ];
+      for (const a of acts) {
+        db.run(`INSERT INTO daily_activities VALUES (?, ?, ?, ?, ?, ?, ?);`, a);
+      }
+
+      db.run(`INSERT INTO smart_tools_logs VALUES (1, 'water', '1750', 'ml', '2026-10-05 14:00');`);
+      db.run(`INSERT INTO smart_tools_logs VALUES (2, 'steps', '3840', 'steps', '2026-10-05 18:30');`);
+      db.run(`INSERT INTO smart_tools_logs VALUES (3, 'kicks', '10', 'kicks', '2026-10-05 19:15');`);
+      db.run(`INSERT INTO smart_tools_logs VALUES (4, 'blood_pressure', '118/76', 'mmHg', '2026-10-05 09:00');`);
+
+      const posts = [
+        [1, 'Priyanka Madina', '26 weeks pregnant', '#GeneralPregnancy', 'Is it normal to notice mild pigment patches on cheekbones during Month 6? My elder sister says it is melasma and fades post-delivery.', 14, 4, '2 hours ago'],
+        [2, 'Parteek Sandhu', 'Mother of 5 months', '#WeaningDiet', 'Hello mamas! For those introducing first semi-solids at 6 months, did you start with steamed ragi malt or dal water first? Looking for easy digestion ideas.', 28, 9, '5 hours ago'],
+        [3, 'Kamaldeep Kaur', '30 weeks pregnant', '#Nutrition', 'Can we drink warm saffron milk at night in the 3rd trimester? Looking for doctor-approved home recipes for better sleep.', 35, 12, '1 day ago'],
+        [4, 'Sunita Deshmukh', '14 weeks pregnant', '#FirstScan', 'Just completed the NT scan and double marker at the district hospital. Hearing the heartbeat for the first time made us both so emotional!', 42, 18, '2 days ago']
+      ];
+      for (const p of posts) {
+        db.run(`INSERT INTO community_posts VALUES (?, ?, ?, ?, ?, ?, ?, ?);`, p);
+      }
+
+      const milestones = [
+        [1, 'Poppy Seed', 0.1, 0.01, 'Fertilization & Implantation', 'The blastocyst implants securely into the uterine lining.'],
+        [4, 'Sweet Pea', 0.4, 0.1, 'Neural Tube Forming', 'The foundational cells of the brain and spine begin closing.'],
+        [8, 'Raspberry', 1.6, 1.0, 'Tiny Fingers & Toes', 'Webbed digits separate; tiny heartbeat can be detected on ultrasound.'],
+        [12, 'Plum', 5.4, 14.0, 'End of Trimester 1', 'Reflexes start; kidneys begin producing amniotic fluid.'],
+        [14, 'Peach', 8.7, 43.0, 'Facial Muscles Active', 'Baby can squint, frown, and suck thumb! Fine lanugo hair appears.'],
+        [16, 'Avocado', 11.6, 100.0, 'Listening to Mother Voice', 'Fetal ear bones harden; baby can hear mother heartbeat and melodic voice.'],
+        [20, 'Banana', 25.6, 300.0, 'Halfway Milestone & Flutters', 'Quickening kicks felt; taste buds are forming in mouth.'],
+        [24, 'Corn Cob', 30.0, 600.0, 'Lung Capillaries Maturing', 'Inner ear balance is complete; baby responds to external music rhythms.'],
+        [28, 'Eggplant', 37.6, 1000.0, 'Third Trimester Begins', 'Baby opens eyes; REM dream sleep cycles start.'],
+        [32, 'Coconut', 42.4, 1700.0, 'Practicing Breathing', 'Lungs practice rhythmic expansion with amniotic fluid.'],
+        [36, 'Papaya', 47.4, 2600.0, 'Full Term Preparation', 'Baby gains 200g weekly; settles into head-down pelvic position.'],
+        [40, 'Watermelon', 51.2, 3400.0, 'Welcome to the World!', 'Fully developed lungs and immune system ready for delivery.']
+      ];
+      for (const m of milestones) {
+        db.run(`INSERT INTO baby_milestones VALUES (?, ?, ?, ?, ?, ?);`, m);
+      }
+
+      db.run(`INSERT INTO ai_chat VALUES (1, 'ai', 'Namaste Ananya! I am your Swasth maternal health guide. You are at Week 14 (Trimester 2). How can I assist your health and Garbh Sanskar routine today?', '09:00 AM');`);
+    }
+
+    function persistDatabase() {
+      if (db) {
+        try {
+          const binary = db.export();
+          localStorage.setItem('swasth_sqlite_db', JSON.stringify(Array.from(binary)));
+        } catch (e) {
+          console.warn("Storage export error:", e);
+        }
+      }
+    }
+
+    function setupFallbackDb() {
+      db = {
+        run: function(sql, params) {},
+        exec: function(sql) { return [{ columns: ['Status'], values: [['Active']] }]; },
+        export: function() { return new Uint8Array(); }
+      };
+    }
+
+    // WEEK STRIP & GROWTH
+    function renderWeekStrip() {
+      const container = document.getElementById('weekStripContainer');
+      container.innerHTML = '';
+      for (let i = 11; i <= 24; i++) {
+        const pill = document.createElement('div');
+        pill.className = `week-pill ${i === currentUser.week ? 'active' : ''}`;
+        pill.id = `week-pill-${i}`;
+        pill.onclick = () => selectWeek(i);
+        pill.innerHTML = `
+          <span class="wk-lbl">Week</span>
+          <span class="wk-num">${i}</span>
+        `;
+        container.appendChild(pill);
+      }
+    }
+
+    function selectWeek(wk) {
+      currentUser.week = wk;
+      document.querySelectorAll('.week-pill').forEach(p => p.classList.remove('active'));
+      const activePill = document.getElementById(`week-pill-${wk}`);
+      if (activePill) activePill.classList.add('active');
+      document.getElementById('growthWeekSlider').value = wk;
+      updateGrowthCard(wk);
+    }
+
+    function onWeekSliderChange(wk) {
+      wk = parseInt(wk);
+      selectWeek(wk);
+    }
+
+    function updateGrowthCard(wk) {
+      document.getElementById('sliderWeekDisplay').innerText = `Week ${wk} (Interactive Scrubber)`;
+      
+      let trimester = wk <= 12 ? 'Trimester 1' : wk <= 27 ? 'Trimester 2' : 'Trimester 3';
+      let day = wk * 7;
+      document.getElementById('heroTrimesterText').innerText = `${trimester} · Week ${wk}`;
+      document.getElementById('heroDayText').innerText = `Day ${day} of 280`;
+
+      let fruit = 'Peach';
+      let length = (wk * 1.1).toFixed(1);
+      let weight = Math.round(wk * 15 * (wk / 10));
+      let desc = 'Baby is flexing tiny facial muscles and practicing thumb movements!';
+
+      if (db) {
+        try {
+          const res = db.exec(`SELECT fruit_name, length_cm, weight_g, milestone_desc FROM baby_milestones WHERE week_num <= ${wk} ORDER BY week_num DESC LIMIT 1;`);
+          if (res && res[0] && res[0].values.length > 0) {
+            const row = res[0].values[0];
+            fruit = row[0];
+            desc = row[3];
+          }
+        } catch (e) {}
+      }
+
+      document.getElementById('babyFruitName').innerText = `${fruit} Stage`;
+      document.getElementById('babyMilestoneShort').innerText = desc;
+      document.getElementById('babyLengthText').innerText = `${length} cm`;
+      document.getElementById('babyWeightText').innerText = `${weight} g`;
+    }
+
+    // DAILY ACTIVITIES
+    let currentCategoryFilter = 'ALL';
+
+    function getCategorySvg(cat) {
+      if (cat === 'SQ') {
+        return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a5 5 0 0 1 5 5c0 3-2 5-5 9-3-4-5-6-5-9a5 5 0 0 1 5-5z"/></svg>`;
+      } else if (cat === 'IQ') {
+        return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 3 2 5 3 6h8c1-1 3-3 3-6a7 7 0 0 0-7-7z"/></svg>`;
+      } else if (cat === 'EQ') {
+        return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+      } else {
+        return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`;
+      }
+    }
+
+    function loadActivities() {
+      const container = document.getElementById('activitiesListContainer');
+      container.innerHTML = '';
+      if (!db) return;
+
+      let sql = `SELECT id, category, icon, title, subtitle, duration, is_completed FROM daily_activities`;
+      if (currentCategoryFilter !== 'ALL') {
+        sql += ` WHERE category = '${currentCategoryFilter}'`;
+      }
+      sql += ` ORDER BY is_completed ASC, id ASC;`;
+
+      const plansContainer = document.getElementById('plansActivitiesContainer');
+      if (plansContainer) plansContainer.innerHTML = '';
+
+      try {
+        const statsRes = db.exec(`SELECT COUNT(*), SUM(is_completed) FROM daily_activities;`);
+        if (statsRes && statsRes[0]) {
+          const total = statsRes[0].values[0][0];
+          const completed = statsRes[0].values[0][1] || 0;
+          const pct = Math.round((completed / total) * 100);
+          const txt = `${completed} of ${total} Activities Completed (${pct}%)`;
+          if (document.getElementById('activityProgressStats')) document.getElementById('activityProgressStats').innerText = txt;
+          if (document.getElementById('activityProgressBar')) document.getElementById('activityProgressBar').style.width = `${pct}%`;
+          if (document.getElementById('plansProgressStats')) document.getElementById('plansProgressStats').innerText = txt;
+          if (document.getElementById('plansProgressBar')) document.getElementById('plansProgressBar').style.width = `${pct}%`;
+        }
+
+        const res = db.exec(sql);
+        if (res && res[0]) {
+          res[0].values.forEach(row => {
+            const [id, cat, icon, title, sub, dur, isDone] = row;
+            function createCard() {
+              const card = document.createElement('div');
+              card.className = `activity-card ${isDone ? 'completed' : ''}`;
+              card.onclick = () => toggleActivity(id, isDone);
+              card.innerHTML = `
+                <div class="act-icon-box ${cat.toLowerCase()}">${getCategorySvg(cat)}</div>
+                <div class="activity-details">
+                  <div class="act-tag">${cat} Quotients · ${dur}</div>
+                  <div class="act-title">${title}</div>
+                  <div class="act-sub">${sub}</div>
+                </div>
+                <div class="act-check-btn">
+                  ${isDone ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
+                </div>
+              `;
+              return card;
+            }
+            container.appendChild(createCard());
+            if (plansContainer) plansContainer.appendChild(createCard());
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function toggleActivity(id, currentStatus) {
+      const newStatus = currentStatus ? 0 : 1;
+      if (db) {
+        db.run(`UPDATE daily_activities SET is_completed = ${newStatus} WHERE id = ${id};`);
+        persistDatabase();
+      }
+      showConfetti(newStatus === 1 ? 'Activity Completed!' : 'Activity marked pending');
+      loadActivities();
+    }
+
+    function filterActivities(cat) {
+      currentCategoryFilter = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.innerText.includes(cat) || (cat === 'ALL' && btn.innerText.includes('All')));
+      });
+      loadActivities();
+    }
+
+    function showConfetti(msg) {
+      const pop = document.getElementById('confettiPop');
+      pop.innerText = msg;
+      pop.classList.add('show');
+      setTimeout(() => pop.classList.remove('show'), 2200);
+    }
+
+    // COMMUNITY POSTS
+    function loadCommunityPosts() {
+      const container = document.getElementById('communityFeedContainer');
+      container.innerHTML = '';
+      if (!db) return;
+
+      try {
+        const res = db.exec(`SELECT id, author_name, week_badge, category, question_text, likes_count, comments_count, created_at FROM community_posts ORDER BY id DESC;`);
+        if (res && res[0]) {
+          res[0].values.forEach(row => {
+            const [id, author, week, cat, text, likes, comments, time] = row;
+            const post = document.createElement('div');
+            post.className = 'comm-post-card';
+            post.innerHTML = `
+              <div class="post-header">
+                <div class="post-author-box">
+                  <div class="post-avatar-circle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  </div>
+                  <div>
+                    <div class="post-author-name">${author}</div>
+                    <div class="post-stage-pill">${week} · ${time}</div>
+                  </div>
+                </div>
+                <span class="post-category-tag">${cat}</span>
+              </div>
+              <div class="post-content">${text}</div>
+              <div class="post-footer-actions">
+                <button class="action-like-btn" onclick="likePost(${id})">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  <span>${likes}</span> Helpful
+                </button>
+                <span>${comments} Responses</span>
+                <span style="color: var(--primary); font-weight: 700; cursor: pointer;">Reply</span>
+              </div>
+            `;
+            container.appendChild(post);
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function likePost(id) {
+      if (db) {
+        db.run(`UPDATE community_posts SET likes_count = likes_count + 1 WHERE id = ${id};`);
+        persistDatabase();
+        loadCommunityPosts();
+        showConfetti('Upvoted! Community ledger updated');
+      }
+    }
+
+    function switchCommTab(el, tabName) {
+      document.querySelectorAll('.comm-tab-item').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      loadCommunityPosts();
+    }
+
+    function openNewPostModal() {
+      const question = prompt("Ask a question to fellow mothers in your Birth Club:");
+      if (question && question.trim()) {
+        const author = currentUser.name || "Ananya Sharma";
+        const week = `Week ${currentUser.week} pregnant`;
+        db.run(`INSERT INTO community_posts (author_name, week_badge, category, question_text, likes_count, comments_count, created_at) VALUES (?, ?, ?, ?, 1, 0, 'Just now');`, [author, week, '#BirthClubQuestion', question.trim()]);
+        persistDatabase();
+        loadCommunityPosts();
+        showConfetti("Post published to your Birth Club!");
+      }
+    }
+
+    // AI COMPANION
+    function loadAiChat() {
+      const box = document.getElementById('aiChatBox');
+      box.innerHTML = '';
+      if (!db) return;
+
+      try {
+        const res = db.exec(`SELECT sender, text, timestamp FROM ai_chat ORDER BY id ASC;`);
+        if (res && res[0]) {
+          res[0].values.forEach(row => {
+            const [sender, text, time] = row;
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${sender}`;
+            bubble.innerHTML = `<div>${text}</div><div style="font-size: 9px; opacity: 0.6; text-align: right; margin-top: 4px;">${time}</div>`;
+            box.appendChild(bubble);
+          });
+          box.scrollTop = box.scrollHeight;
+        }
+      } catch (e) {}
+    }
+
+    // -------------------------------------------------------------
+    // Voice & MA Companion Integration (Web Speech API & Bedrock)
+    // -------------------------------------------------------------
+    let recognition = null;
+    let isRecognizing = false;
+    let isTtsEnabled = true;
+    window.isNightMode = false;
+
+    function toggleNightMode() {
+      window.isNightMode = !window.isNightMode;
+      document.body.classList.toggle('night-mode', window.isNightMode);
+      const icon = document.getElementById('nightIcon');
+      if (icon) icon.textContent = window.isNightMode ? '☀️' : '🌙';
+      showConfetti(window.isNightMode ? 'Night Mode Activated (Zero Blue)' : 'Day Mode Restored');
+    }
+
+    function toggleVoiceInput() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Speech recognition is not supported in this browser. Please type your question.");
+        return;
+      }
+      if (!recognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "en-IN";
+        recognition.onresult = (e) => {
+          const text = e.results[0][0].transcript;
+          const input = document.getElementById('aiInput');
+          if (input) input.value = text;
+          sendAiMessage();
+        };
+        recognition.onend = () => {
+          isRecognizing = false;
+          const btn = document.getElementById('voiceMicBtn');
+          if (btn) btn.classList.remove('active');
+        };
+      }
+
+      if (isRecognizing) {
+        recognition.stop();
+        isRecognizing = false;
+        const btn = document.getElementById('voiceMicBtn');
+        if (btn) btn.classList.remove('active');
+      } else {
+        isRecognizing = true;
+        recognition.start();
+        const btn = document.getElementById('voiceMicBtn');
+        if (btn) btn.classList.add('active');
+      }
+    }
+
+    function speakReply(text) {
+      if (!isTtsEnabled || !("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const clean = text.replace(/[*#_`]/g, '');
+      const u = new SpeechSynthesisUtterance(clean);
+      u.rate = window.isNightMode ? 0.88 : 1.0;
+      u.pitch = 1.05;
+      window.speechSynthesis.speak(u);
+    }
+
+    function sendAiMessage() {
+      const input = document.getElementById('aiInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      askAiQuestion(text);
+    }
+
+    async function askAiQuestion(query) {
+      const now = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      if (db) {
+        db.run(`INSERT INTO ai_chat (sender, text, timestamp) VALUES ('user', ?, ?);`, [query, now]);
+        persistDatabase();
+        loadAiChat();
+      }
+
+      // 1. Try Live MA Backend API (FastAPI + Bedrock Converse + FastMCP)
+      try {
+        const res = await fetch("http://127.0.0.1:8001/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: query, is_night_mode: window.isNightMode || false })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.reply) {
+            let replyText = data.reply;
+            if (data.safety_triggered) {
+              replyText = `💛 CARE RESPONSE: ${data.reply}\n\nSupport Lines:\n• Tele-MANAS: 14416\n• Vandrevala Foundation: +91 9999 666 555`;
+            }
+            if (db) {
+              db.run(`INSERT INTO ai_chat (sender, text, timestamp) VALUES ('ai', ?, ?);`, [replyText, now]);
+              persistDatabase();
+              loadAiChat();
+            }
+            speakReply(data.reply);
+            return;
+          }
+        }
+      } catch (err) {
+        // Backend not reachable, continue to local knowledge base below
+      }
+
+      // 2. Local Fallback Knowledge Base & Distress Triage
+      setTimeout(() => {
+        let reply = "";
+        const lower = query.toLowerCase();
+
+        // Distress / Mental health triage
+        if (lower.includes('hopeless') || lower.includes("can't do this") || lower.includes('failing') || lower.includes('exhausted') || lower.includes('hurt myself') || lower.includes('die')) {
+          reply = `💛 You are not alone, mama. Postpartum and pregnancy transitions are deeply challenging. Please reach out to your midwife or doctor today, or call Tele-MANAS (14416) or the Vandrevala Foundation (+91 9999 666 555) for 24/7 confidential warmth and care.`;
+        } else if (lower.includes('feed') || lower.includes('nurse') || lower.includes('bottle')) {
+          reply = `Feeding Rhythms: Feeding logged successfully. Every drop nourishes your baby, whether nursing, pumping, formula, or mixed feeding. You are doing an amazing job.`;
+        } else if (lower.includes('sleep') || lower.includes('slept') || lower.includes('nap')) {
+          reply = `Rest Tracker: Maya's sleep stretch has been recorded in your daily rhythm. Rest your eyes whenever baby is resting.`;
+        } else if (lower.includes('partner') || lower.includes('task') || lower.includes('chore')) {
+          reply = `Partner Board: Added to your shared family board. Sharing the night load protects maternal sleep and recovery.`;
+        } else if (lower.includes('bleeding') || lower.includes('pain') || lower.includes('fever') || lower.includes('severe')) {
+          reply = `CLINICAL RED FLAG: Swasth AI provides non-diagnostic guidance. If experiencing bleeding, severe pelvic pain, or high fever, please seek immediate evaluation at your nearest Primary Health Center (PHC Rampur) or call 108 Emergency.`;
+        } else if (lower.includes('milestone') || lower.includes('week 14') || lower.includes('developing')) {
+          reply = `Week 14 Fetal Growth: Baby is the size of a peach (approx. 8.7 cm and 43 grams). Tiny facial muscles are now functioning, allowing baby to make subtle expressions. Fingerprints are also permanently formed.`;
+        } else if (lower.includes('iron') || lower.includes('calcium') || lower.includes('food')) {
+          reply = `Nutrition Guide: To support hemoglobin and lactation, incorporate steamed drumstick leaves, soaked dates, roasted sesame seeds, and sprouted moong. Pair with Vitamin C for optimal absorption.`;
+        } else if (lower.includes('stretch') || lower.includes('yoga') || lower.includes('exercise')) {
+          reply = `Safe Movement: Gentle butterfly pose (Bhadrasana) and cat-cow stretches help alleviate pelvic tension. Avoid deep inversions and maintain comfortable rhythmic breathing.`;
+        } else {
+          reply = `Swasth Fetal Wellness: During Week ${currentUser.week}, focus on rhythmic hydration, 15 minutes of calming Garbh Sanskar listening, and keeping your MCP vaccination card handy for your next PHC visit.`;
+        }
+
+        if (db) {
+          db.run(`INSERT INTO ai_chat (sender, text, timestamp) VALUES ('ai', ?, ?);`, [reply, now]);
+          persistDatabase();
+          loadAiChat();
+        }
+        speakReply(reply);
+      }, 400);
+    }
+
+    function clearAiChat() {
+      if (confirm("Reset chat history?")) {
+        db.run(`DELETE FROM ai_chat WHERE id > 1;`);
+        persistDatabase();
+        loadAiChat();
+      }
+    }
+
+    // BOTTOM SHEET TOOLS
+    function openToolSheet(type) {
+      const sheet = document.getElementById('bottomSheet');
+      const content = document.getElementById('sheetContent');
+      
+      if (type === 'water') {
+        content.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 800; color: #0284C7;">Hydration Log (SQLite)</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Daily Target: 2,500 ml for maternal blood volume support</p>
+          <div style="font-size: 38px; text-align: center; margin: 10px 0; font-weight: 800; color: #0369A1;" id="sheetWaterVal">1,750 ml</div>
+          <div style="display: flex; gap: 10px; justify-content: center;">
+            <button onclick="logWater(250)" class="auth-btn-primary" style="background: #0284C7; flex: 1;">+ 250ml Glass</button>
+            <button onclick="logWater(500)" class="auth-btn-primary" style="background: #0369A1; flex: 1;">+ 500ml Bottle</button>
+          </div>
+        `;
+      } else if (type === 'kicks') {
+        content.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 800; color: #D97706;">Baby Kick Counter</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Count 10 movements within a 2-hour window</p>
+          <div style="font-size: 46px; text-align: center; margin: 14px 0; font-weight: 800; color: #B45309;" id="sheetKickCount">10</div>
+          <button onclick="incrementKick()" class="auth-btn-primary" style="background: #F59E0B;">Record Baby Kick</button>
+        `;
+      } else if (type === 'audio') {
+        content.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 800; color: #8B5CF6;">Om Chanter & Sound Healing</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">432Hz harmonic acoustic resonance</p>
+          <div style="text-align: center; margin: 20px 0; color: #8B5CF6;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M6 12a6 6 0 0 1 12 0"/><path d="M3 12a9 9 0 0 1 18 0"/></svg>
+          </div>
+          <button onclick="toggleAudioChant(this)" class="auth-btn-primary" style="background: #8B5CF6;">Play 10-Minute Calming Chants</button>
+        `;
+      } else if (type === 'vaccine') {
+        content.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 800; color: #10B981;">Care Continuity & Vaccines</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">National UIP Maternal Immunization Schedule</p>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="background: #ECFDF5; border: 1px solid #A7F3D0; padding: 12px; border-radius: 14px; display: flex; justify-content: space-between;">
+              <div><strong>TT-1 / Td-1 Vaccine</strong><div style="font-size: 10px; color: #047857;">Administered early in pregnancy</div></div>
+              <span style="color: #059669; font-weight: 800;">Completed</span>
+            </div>
+            <div style="background: #FFFBEB; border: 1px solid #FDE68A; padding: 12px; border-radius: 14px; display: flex; justify-content: space-between;">
+              <div><strong>TT-2 / Td-2 Booster</strong><div style="font-size: 10px; color: #B45309;">Due at Week 18 · PHC Rampur</div></div>
+              <span style="color: #D97706; font-weight: 800;">Upcoming (4 Wks)</span>
+            </div>
+          </div>
+        `;
+      } else if (type === 'vitals') {
+        content.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 800; color: #E11D48;">Maternal Health Hub</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Recorded at Primary Health Center</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+            <div style="background: #FFF1F4; padding: 12px; border-radius: 14px;">
+              <div style="font-size: 11px; color: #9F1239;">Blood Pressure</div>
+              <div style="font-size: 18px; font-weight: 800; color: #881337;">118 / 76 mmHg</div>
+            </div>
+            <div style="background: #FFF1F4; padding: 12px; border-radius: 14px;">
+              <div style="font-size: 11px; color: #9F1239;">Maternal Weight</div>
+              <div style="font-size: 18px; font-weight: 800; color: #881337;">62.4 kg (+2.2 kg)</div>
+            </div>
+          </div>
+          <button onclick="closeToolSheet()" class="auth-btn-primary">Done</button>
+        `;
+      } else if (type === 'mcp') {
+        content.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 800; color: #FF3B69;">⚡ Model Context Protocol (MCP)</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Official MCP Streamable HTTP Transport (2025-11-25) on <code>http://127.0.0.1:8005/mcp</code></p>
+          <div style="background: #180A1A; color: #FFF; padding: 14px; border-radius: 14px; font-family: monospace; font-size: 11px; max-height: 220px; overflow-y: auto;">
+            <div style="color: #10B981; font-weight: bold; margin-bottom: 6px;">● MCP Server Connected (:8005)</div>
+            <div style="color: #FF8BA7; margin-top: 4px;">Endpoints:</div>
+            <div>• POST /mcp (JSON-RPC 2.0 tools/call)</div>
+            <div>• GET /mcp (Server-Sent Events)</div>
+            <div style="margin-top: 8px; color: #FF8BA7;">Registered MCP Tools:</div>
+            <div>- log_feed (breast_left, breast_right, bottle, solid)</div>
+            <div>- log_sleep (start_time, end_time)</div>
+            <div>- baby_summary (today, last_night, week)</div>
+            <div>- mood_checkin (score 1-5, maternal safety)</div>
+            <div>- trend_check (rolling time-series)</div>
+            <div>- partner_tasks (assign, list, complete)</div>
+          </div>
+          <button onclick="closeToolSheet()" class="auth-btn-primary" style="margin-top: 14px; background: #FF3B69;">Close Telemetry</button>
+        `;
+      } else {
+        content.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 800;">${type.toUpperCase()}</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Feature synced with on-device SQLite database.</p>
+          <button onclick="closeToolSheet()" class="auth-btn-primary" style="margin-top: 20px;">Close</button>
+        `;
+      }
+      sheet.classList.add('open');
+    }
+
+    function closeToolSheet() {
+      document.getElementById('bottomSheet').classList.remove('open');
+    }
+
+    function logWater(amount) {
+      if (db) {
+        let current = 1750;
+        try {
+          const res = db.exec(`SELECT value FROM smart_tools_logs WHERE tool_name = 'water';`);
+          if (res && res[0]) current = parseInt(res[0].values[0][0]) || 1750;
+        } catch(e){}
+        const updated = current + amount;
+        db.run(`UPDATE smart_tools_logs SET value = '${updated}' WHERE tool_name = 'water';`);
+        persistDatabase();
+        document.getElementById('sheetWaterVal').innerText = `${updated} ml`;
+        document.getElementById('toolWaterSub').innerText = `${updated} / 2,500 ml`;
+        showConfetti(`+${amount}ml water logged! Stay hydrated`);
+      }
+    }
+
+    function incrementKick() {
+      if (db) {
+        let current = 10;
+        try {
+          const res = db.exec(`SELECT value FROM smart_tools_logs WHERE tool_name = 'kicks';`);
+          if (res && res[0]) current = parseInt(res[0].values[0][0]) || 10;
+        } catch(e){}
+        const updated = current + 1;
+        db.run(`UPDATE smart_tools_logs SET value = '${updated}' WHERE tool_name = 'kicks';`);
+        persistDatabase();
+        document.getElementById('sheetKickCount').innerText = updated;
+        document.getElementById('toolKicksSub').innerText = `${updated} kicks recorded`;
+        showConfetti(`Kick #${updated} recorded`);
+      }
+    }
+
+    let omAudioCtx = null;
+    let omOsc1 = null, omOsc2 = null;
+
+    function toggleAudioChant(btn) {
+      if (btn.innerText.includes('Play')) {
+        btn.innerText = 'Pause Om Chanting';
+        btn.style.background = '#EF4444';
+        try {
+          omAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          omOsc1 = omAudioCtx.createOscillator();
+          omOsc2 = omAudioCtx.createOscillator();
+          const gain = omAudioCtx.createGain();
+          omOsc1.type = 'sine';
+          omOsc1.frequency.setValueAtTime(432, omAudioCtx.currentTime);
+          omOsc2.type = 'triangle';
+          omOsc2.frequency.setValueAtTime(216, omAudioCtx.currentTime);
+          gain.gain.setValueAtTime(0.06, omAudioCtx.currentTime);
+          omOsc1.connect(gain);
+          omOsc2.connect(gain);
+          gain.connect(omAudioCtx.destination);
+          omOsc1.start();
+          omOsc2.start();
+        } catch(e) {}
+        showConfetti('432Hz Harmonic Sound Healing active');
+      } else {
+        btn.innerText = 'Play 10-Minute Calming Chants';
+        btn.style.background = '#8B5CF6';
+        if (omOsc1) { try { omOsc1.stop(); } catch(e){} omOsc1 = null; }
+        if (omOsc2) { try { omOsc2.stop(); } catch(e){} omOsc2 = null; }
+        if (omAudioCtx) { try { omAudioCtx.close(); } catch(e){} omAudioCtx = null; }
+      }
+    }
+
+    // AUTH
+    function switchAuthTab(type) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      if (type === 'phone') {
+        document.querySelectorAll('.auth-tab')[0].classList.add('active');
+        document.getElementById('authPhoneGroup').style.display = 'block';
+        document.getElementById('authEmailGroup').style.display = 'none';
+        currentUser.authType = 'phone';
+      } else {
+        document.querySelectorAll('.auth-tab')[1].classList.add('active');
+        document.getElementById('authPhoneGroup').style.display = 'none';
+        document.getElementById('authEmailGroup').style.display = 'block';
+        currentUser.authType = 'email';
+      }
+    }
+
+    function proceedToVerification() {
+      const otp = prompt("Swasth Verification: Enter the 6-digit OTP passcode (123456):", "123456");
+      if (otp) {
+        showConfetti("Login Verified! Loading profile...");
+        setTimeout(() => switchTab('home'), 400);
+      }
+    }
+
+    function oneClickDemoLogin() {
+      currentUser.name = "Ananya Sharma";
+      currentUser.week = 14;
+      document.getElementById('userNameHeader').innerText = "Ananya Sharma";
+      document.getElementById('profileNameDisplay').innerText = "Ananya Sharma";
+      showConfetti("Welcome Ananya! Your daily companion is ready.");
+      switchTab('home');
+    }
+
+    
+    
+    // SESSION SUB-TAB NAVIGATION
+    function switchSessionSubTab(subTab) {
+      const tabs = ['programs', 'circuit', 'mobility', 'nutrition', 'ai'];
+      tabs.forEach(t => {
+        const el = document.getElementById(`sessionView-${t}`);
+        const btn = document.getElementById(`subtabBtn-${t}`);
+        if (el) el.style.display = (t === subTab) ? 'block' : 'none';
+        if (btn) btn.classList.toggle('active', t === subTab);
+      });
+    }
+
+    // TIMED CIRCUIT PLAYER LOGIC (REF 33)
+    let circuitTimerRunning = true;
+    let circuitSeconds = 45;
+    let circuitInterval = null;
+    let currentMoveIndex = 0;
+    const circuitMoves = [
+      "Resistance Band Step Back",
+      "Gentle Prenatal Squat with Band",
+      "Glute Bridge & Diaphragmatic Breath",
+      "Pelvic Tilt with Support",
+      "Cat-Cow Spinal Mobility",
+      "Butterfly Release Stretch"
+    ];
+
+    function startGuidedCircuit() {
+      switchSessionSubTab('circuit');
+      currentMoveIndex = 0;
+      updateCircuitDisplay();
+      startTimerCountdown();
+      showConfetti("Starting Guided Circuit 2 of 3!");
+    }
+
+    function toggleCircuitTimer() {
+      circuitTimerRunning = !circuitTimerRunning;
+      const btn = document.getElementById('btnCircuitTimer');
+      if (circuitTimerRunning) {
+        btn.innerText = "Pause Interval";
+        startTimerCountdown();
+      } else {
+        btn.innerText = "Resume Interval";
+        clearInterval(circuitInterval);
+      }
+    }
+
+    function startTimerCountdown() {
+      clearInterval(circuitInterval);
+      circuitInterval = setInterval(() => {
+        if (circuitSeconds > 0) {
+          circuitSeconds--;
+          const mins = Math.floor(circuitSeconds / 60);
+          const secs = circuitSeconds % 60;
+          const display = `0${mins}:${secs < 10 ? '0' : ''}${secs}`;
+          document.getElementById('circuitTimerDisplay').innerText = display;
+        } else {
+          nextCircuitMove();
+        }
+      }, 1000);
+    }
+
+    function nextCircuitMove() {
+      currentMoveIndex = (currentMoveIndex + 1) % circuitMoves.length;
+      circuitSeconds = 45;
+      updateCircuitDisplay();
+      showConfetti(`Next: ${circuitMoves[currentMoveIndex]}`);
+    }
+
+    function updateCircuitDisplay() {
+      const title = document.getElementById('activeMoveTitle');
+      if (title) title.innerText = circuitMoves[currentMoveIndex];
+      const fill = document.getElementById('circuitProgressFill');
+      if (fill) {
+        const pct = Math.round(((currentMoveIndex + 1) / circuitMoves.length) * 100);
+        fill.style.width = `${pct}%`;
+      }
+    }
+
+    function skipCircuit() {
+      showConfetti("Circuit skipped to cool-down stretch");
+      switchSessionSubTab('mobility');
+    }
+
+    function startStageProgram(stageName) {
+      openModalSheet(`
+        <h3 style="font-size: 18px; font-weight: 800; color: #1E293B;">${stageName} Maternal Program</h3>
+        <p style="font-size: 12px; color: #64748B; margin: 4px 0 14px;">Personalized for Week 14 Trimester 2</p>
+        <div style="background: #F8FAFC; border-radius: 14px; padding: 14px; font-size: 12px; color: #334155; line-height: 1.6; margin-bottom: 16px;">
+          ✓ 6 Progression Levels · Certified Obstetric Physio Designed<br>
+          ✓ Low-impact transverse abdominal engagement<br>
+          ✓ Pelvic girdle alignment and sciatica relief<br>
+          ✓ Safe breathing rhythms with no intra-abdominal pressure
+        </div>
+        <button class="sheet-action-btn" onclick="closeToolSheet(); startGuidedCircuit();">Begin ${stageName} Workout</button>
+      `);
+    }
+
+    function openExerciseDetail(type) {
+      let title = "Pelvic Floor Release";
+      let desc = "Gentle breathing release with neutral pelvis alignment.";
+      if (type === 'stretch') { title = "Slam Stretch & Release"; desc = "432Hz harmonic sound stretch for lower back and glutes."; }
+      if (type === 'walk') { title = "Brisk Prenatal Walk"; desc = "Target: 1,500 continuous steps post-meal."; }
+      if (type === 'mobility') { title = "Hip Mobility & Posture"; desc = "Cat-cow spinal mobility and butterfly releases."; }
+      if (type === 'yoga') { title = "Garbh Sanskar Yoga"; desc = "Gentle prenatal surya namaskar modifications."; }
+      if (type === 'myofascial') { title = "Myofascial Tension Release"; desc = "Tennis ball glute & sacrum acupressure release."; }
+
+      openModalSheet(`
+        <h3 style="font-size: 18px; font-weight: 800; color: #1E293B;">${title}</h3>
+        <p style="font-size: 12px; color: #64748B; margin: 4px 0 14px;">${desc}</p>
+        <div style="background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 12px; padding: 12px; font-size: 12px; color: #065F46; margin-bottom: 14px;">
+          Certified safe for Trimester 2. Stop immediately if any dizziness occurs.
+        </div>
+        <button class="sheet-action-btn" onclick="closeToolSheet(); startGuidedCircuit();">Start Session Now</button>
+      `);
+    }
+
+    function filterByInstructor(name) {
+      showConfetti(`Viewing routines by ${name}`);
+      switchSessionSubTab('mobility');
+    }
+
+    function toggleLessonDay(el) {
+      el.classList.toggle('done');
+      el.innerText = el.classList.contains('done') ? '✓' : el.innerText;
+      showConfetti("Daily nutrition goal recorded!");
+    }
+
+    function openRecipeModal(dish) {
+      let title = "Sprouted Moong & Pomegranate Salad";
+      let benefits = "High natural Folate (Vitamin B9), Iron, Vitamin C for baby neural tube & blood volume.";
+      let recipe = "1 cup sprouted green moong, 1/2 cup pomegranate pearls, lemon juice, roasted cumin powder, rock salt. Toss fresh and consume with breakfast.";
+
+      if (dish === 'kheer') {
+        title = "Saffron Almond Golden Milk (Kheer)";
+        benefits = "Rich in Calcium, Magnesium, and tryptophan for deep restful sleep & fetal bone density.";
+        recipe = "Warm cow milk or oat milk with 4 soaked peeled almonds, 2 strands pure Kashmiri saffron, pinch of cardamom. Sip warm 30 mins before bedtime.";
+      } else if (dish === 'ragi') {
+        title = "Steamed Ragi & Apple Mash (Weaning Phase 1)";
+        benefits = "High bioavailability Calcium & Iron for infant bone hardening and smooth digestion.";
+        recipe = "2 tbsp organic ragi flour roasted gently in cow ghee, mixed with warm water and sweet apple puree. Cook until velvety smooth.";
+      } else if (dish === 'methi') {
+        title = "Methi & Flaxseed Thepla";
+        benefits = "Soluble dietary fiber, Omega-3 ALA, and natural relief for maternal constipation.";
+        recipe = "Whole wheat flour kneaded with fresh fenugreek leaves, roasted flaxseed powder, turmeric, and light curd. Roast with minimal ghee.";
+      }
+
+      openModalSheet(`
+        <h3 style="font-size: 18px; font-weight: 800; color: #1E293B;">${title}</h3>
+        <div style="background: #FFF1F4; border-radius: 10px; padding: 6px 12px; font-size: 11px; font-weight: 800; color: var(--primary); margin: 8px 0 12px;">
+          ${benefits}
+        </div>
+        <div style="font-size: 12px; color: #334155; line-height: 1.6; margin-bottom: 16px;">
+          <strong>Preparation:</strong><br>${recipe}
+        </div>
+        <button class="sheet-action-btn" onclick="closeToolSheet(); showConfetti('Recipe saved to favorites!');">Save to Favorites</button>
+      `);
+    }
+
+    // SWITCH TAB (CLUBS, PLANS, HOME, SESSION, MORE)
+    function switchTab(tabId) {
+      const views = ['home', 'community', 'plans', 'ai', 'more', 'auth'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) el.style.display = (v === tabId) ? 'block' : 'none';
+      });
+
+      // Update active state in bottom dock
+      document.querySelectorAll('.ref-nav-tab').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById(`tabBtn-${tabId}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      document.getElementById('bottomDock').style.display = (tabId === 'auth') ? 'none' : 'flex';
+      document.getElementById('appViewport').scrollTop = 0;
+
+      if (tabId === 'plans') {
+        renderPlansActivities();
+      }
+    }
+
+    // SETTINGS ACTIONS (MATCHING REF media_1791234426439)
+    let currentUnits = 'Kg/Cm';
+    function toggleUnits() {
+      currentUnits = (currentUnits === 'Kg/Cm') ? 'Lbs/In' : 'Kg/Cm';
+      document.getElementById('currentUnitsLabel').innerText = currentUnits;
+      showConfetti(`Units updated to ${currentUnits}`);
+    }
+
+    function onNotificationToggle(enabled) {
+      showConfetti(enabled ? "Daily reminders enabled" : "Reminders muted");
+    }
+
+    function onVibrationToggle(enabled) {
+      showConfetti(enabled ? "Haptic feedback enabled" : "Haptic feedback muted");
+    }
+
+    function openNotificationSettingsModal() {
+      openModalSheet(`
+        <h3 style="font-size: 18px; font-weight: 800; color: #1E293B; margin-bottom: 8px;">Advanced Reminders</h3>
+        <p style="font-size: 12px; color: #64748B; margin-bottom: 16px;">Customize reminder cadence for daily Garbh Sanskar habits and clinic appointments.</p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <label style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #F8FAFC; border-radius: 12px; font-size: 13px; font-weight: 600;">
+            Morning Raga & Meditation (07:00 AM)
+            <input type="checkbox" checked style="accent-color: var(--primary);">
+          </label>
+          <label style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #F8FAFC; border-radius: 12px; font-size: 13px; font-weight: 600;">
+            Hourly Hydration Prompt (250ml)
+            <input type="checkbox" checked style="accent-color: var(--primary);">
+          </label>
+          <label style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #F8FAFC; border-radius: 12px; font-size: 13px; font-weight: 600;">
+            PHC Checkup Alerts (3 days before)
+            <input type="checkbox" checked style="accent-color: var(--primary);">
+          </label>
+        </div>
+        <button class="sheet-action-btn" onclick="closeToolSheet(); showConfetti('Reminder schedule saved!');" style="margin-top: 18px;">Save Preferences</button>
+      `);
+    }
+
+    function openHelpFeedbackModal() {
+      openModalSheet(`
+        <h3 style="font-size: 18px; font-weight: 800; color: #1E293B; margin-bottom: 8px;">Help & Feedback</h3>
+        <p style="font-size: 12px; color: #64748B; margin-bottom: 14px;">How can we improve Swasth for you and your baby?</p>
+        <textarea style="width: 100%; height: 90px; border-radius: 12px; border: 1px solid #CBD5E1; padding: 10px; font-size: 13px; font-family: inherit; resize: none;" placeholder="Share your experience or report an issue..."></textarea>
+        <button class="sheet-action-btn" onclick="closeToolSheet(); showConfetti('Thank you! Feedback received.');" style="margin-top: 14px;">Submit Feedback</button>
+      `);
+    }
+
+    function openLicensesModal() {
+      openModalSheet(`
+        <h3 style="font-size: 18px; font-weight: 800; color: #1E293B; margin-bottom: 8px;">Open Source Licenses</h3>
+        <p style="font-size: 12px; color: #64748B; margin-bottom: 12px;">Swasth is built on open technologies:</p>
+        <div style="background: #F8FAFC; border-radius: 12px; padding: 12px; font-size: 11px; color: #475569; max-height: 180px; overflow-y: auto; line-height: 1.6;">
+          <strong>• SQLite (Public Domain):</strong> On-device database engine<br>
+          <strong>• sql.js (MIT License):</strong> WebAssembly SQLite port<br>
+          <strong>• Flutter SDK (BSD 3-Clause):</strong> Cross-platform UI toolkit<br>
+          <strong>• IndicTrans2 (MIT License):</strong> Multilingual translation<br>
+          <strong>• NeMo Guardrails (Apache 2.0):</strong> Safe dialogue management
+        </div>
+        <button class="sheet-action-btn" onclick="closeToolSheet();" style="margin-top: 14px;">Close</button>
+      `);
+    }
+
+    function openTranslateModal() {
+      openModalSheet(`
+        <h3 style="font-size: 18px; font-weight: 800; color: #1E293B; margin-bottom: 8px;">Help Us Translate</h3>
+        <p style="font-size: 12px; color: #64748B; margin-bottom: 14px;">Select language preference for voice prompts and health records:</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px;">
+          <button style="padding: 10px; border-radius: 12px; border: 1.5px solid var(--primary); background: #FFF1F4; font-size: 12px; font-weight: 700; color: var(--primary);">English</button>
+          <button style="padding: 10px; border-radius: 12px; border: 1px solid #E2E8F0; background: white; font-size: 12px; font-weight: 600; color: #334155;" onclick="closeToolSheet(); showConfetti('Hindi locale selected');">Hindi</button>
+          <button style="padding: 10px; border-radius: 12px; border: 1px solid #E2E8F0; background: white; font-size: 12px; font-weight: 600; color: #334155;" onclick="closeToolSheet(); showConfetti('Marathi locale selected');">Marathi</button>
+          <button style="padding: 10px; border-radius: 12px; border: 1px solid #E2E8F0; background: white; font-size: 12px; font-weight: 600; color: #334155;" onclick="closeToolSheet(); showConfetti('Bengali locale selected');">Bengali</button>
+          <button style="padding: 10px; border-radius: 12px; border: 1px solid #E2E8F0; background: white; font-size: 12px; font-weight: 600; color: #334155;" onclick="closeToolSheet(); showConfetti('Tamil locale selected');">Tamil</button>
+          <button style="padding: 10px; border-radius: 12px; border: 1px solid #E2E8F0; background: white; font-size: 12px; font-weight: 600; color: #334155;" onclick="closeToolSheet(); showConfetti('Telugu locale selected');">Telugu</button>
+        </div>
+        <button class="sheet-action-btn" onclick="closeToolSheet();">Done</button>
+      `);
+    }
+
+    function openDataProtectionModal() {
+      openModalSheet(`
+        <h3 style="font-size: 18px; font-weight: 800; color: #1E293B; margin-bottom: 8px;">ABHA Data Protection</h3>
+        <p style="font-size: 12px; color: #64748B; margin-bottom: 12px;">Your maternal health records are governed by ABDM standards:</p>
+        <div style="background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 12px; padding: 12px; font-size: 12px; color: #065F46; line-height: 1.5; margin-bottom: 14px;">
+          ✓ 100% on-device encrypted local storage<br>
+          ✓ Zero clinical tracking without explicit maternal consent<br>
+          ✓ ABHA ID linked only for official PHC vaccine cards<br>
+          ✓ Emergency red-flag safety guidance without data brokering
+        </div>
+        <button class="sheet-action-btn" onclick="closeToolSheet();">Understood</button>
+      `);
+    }
+
+    function openModalSheet(htmlContent) {
+      const sheet = document.getElementById('bottomSheet');
+      const content = document.getElementById('sheetContent');
+      content.innerHTML = htmlContent;
+      sheet.classList.add('open');
+    }
+
+    function renderPlansActivities() {
+      const container = document.getElementById('plansActivitiesContainer');
+      const homeList = document.getElementById('activitiesListContainer');
+      if (container && homeList) {
+        container.innerHTML = homeList.innerHTML;
+      }
+    }
+
+    function seedSampleData() {
+      if (confirm("Reset SQLite database to original sample records?")) {
+        localStorage.removeItem('swasth_sqlite_db');
+        setupDatabaseSchema();
+        seedDefaultData();
+        persistDatabase();
+        renderWeekStrip();
+        updateGrowthCard(14);
+        loadActivities();
+        loadCommunityPosts();
+        loadAiChat();
+        showConfetti("Sample data reset to initial state");
+      }
+    }
+
+    
+
+    if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
+    window.addEventListener('DOMContentLoaded', () => {
+      initSqliteEngine();
+      switchTab('home');
+    });
+    // Ensure Home is default view immediately on script evaluation
+    try { switchTab('home'); } catch(e){}
+  </script>
 </body>
 </html>

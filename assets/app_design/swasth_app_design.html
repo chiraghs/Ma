@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swasth - Next-Gen Maternal & Child Care App</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #E93B67;
+    --primary-glow: rgba(233, 59, 103, 0.35);
+    --primary-light: #FFF0F4;
+    --secondary: #6366F1;
+    --secondary-light: #EEF2FF;
+    --lavender: #8B5CF6;
+    --lavender-light: #F5F3FF;
+    --mint: #10B981;
+    --mint-light: #ECFDF5;
+    --sky: #0EA5E9;
+    --sky-light: #F0F9FF;
+    --dark: #0F172A;
+    --text-muted: #64748B;
+    --card-bg: #FFFFFF;
+    --border: #F1F5F9;
+    --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    --shadow-float: 0 20px 35px -10px rgba(99, 102, 241, 0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+  body {
+    background: radial-gradient(circle at top right, #1E1B4B 0%, #0F172A 100%);
+    color: var(--dark);
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .header-brand { text-align: center; color: white; margin-bottom: 35px; }
+  .header-brand h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.5px; font-family: 'Outfit', sans-serif; }
+  .header-brand h1 span { color: var(--primary); }
+  .header-brand p { color: #94A3B8; font-size: 15px; margin-top: 8px; max-width: 750px; line-height: 1.5; }
+  .tagline-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(233, 59, 103, 0.15);
+    color: #FF8BA7;
+    border: 1px solid rgba(233, 59, 103, 0.3);
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 355px);
+    gap: 28px;
+    width: 100%;
+    max-width: 1540px;
+    justify-content: center;
+  }
+
+  .device-card { display: flex; flex-direction: column; align-items: center; }
+  .device-title {
+    color: #F8FAFC;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .device-title .num {
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .phone-frame {
+    width: 355px;
+    height: 740px;
+    background: #FDFEFE;
+    border-radius: 44px;
+    box-shadow: 0 30px 70px -15px rgba(0,0,0,0.6), 0 0 0 10px #1E293B;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .status-bar {
+    height: 38px;
+    padding: 10px 22px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0F172A;
+    z-index: 20;
+  }
+  .dynamic-island {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95px;
+    height: 22px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 25;
+  }
+
+  .screen-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 68px;
+    background: #FAFBFC;
+    position: relative;
+  }
+
+  /* Glassmorphic App Header */
+  .app-header {
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+  }
+  .user-badge-wrap { display: flex; align-items: center; gap: 8px; }
+  .user-avatar-mini {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #FEE2E2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    border: 1.5px solid var(--primary);
+  }
+  .greeting-sub { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+  .user-status-text { font-size: 13px; font-weight: 800; color: var(--dark); font-family: 'Outfit', sans-serif; }
+  .header-actions { display: flex; gap: 6px; }
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #E2E8F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  /* Modern Floating Bottom Nav */
+  .bottom-nav {
+    position: absolute;
+    bottom: 12px;
+    left: 16px;
+    right: 16px;
+    height: 54px;
+    background: #0F172A;
+    border-radius: 28px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.35);
+    z-index: 30;
+    padding: 0 10px;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #94A3B8;
+    font-size: 9px;
+    font-weight: 700;
+    gap: 2px;
+    cursor: pointer;
+  }
+  .nav-item.active { color: white; }
+  .nav-item .icon { font-size: 16px; }
+  .nav-fab-center {
+    width: 38px;
+    height: 38px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    box-shadow: 0 4px 12px var(--primary-glow);
+  }
+
+  /* SCREEN 1: 3D PREGNANCY JOURNEY & MILESTONE HERO */
+  .hero-journey-card {
+    background: linear-gradient(145deg, #FAF5FF 0%, #F3E8FF 100%);
+    border: 1px solid #E9D5FF;
+    border-radius: 24px;
+    margin: 12px 14px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .journey-stage-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .stage-badge {
+    background: var(--lavender);
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+  }
+  .hero-visual-center {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+  }
+  .fetus-art {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #FED7AA 0%, #FDBA74 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 54px;
+    box-shadow: 0 10px 20px rgba(251, 146, 60, 0.25);
+  }
+  .stats-floating { display: flex; flex-direction: column; gap: 8px; }
+  .stat-chip {
+    background: white;
+    border-radius: 14px;
+    padding: 8px 12px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid #F1F5F9;
+  }
+  .stat-chip .val { font-size: 16px; font-weight: 800; color: var(--dark); font-family: 'Outfit', sans-serif; }
+  .stat-chip .lbl { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+
+  /* Timeline Progress Bar */
+  .progress-tracker-wrap {
+    background: white;
+    border-radius: 16px;
+    padding: 12px 14px;
+    margin: 0 14px 10px;
+    box-shadow: var(--shadow-soft);
+  }
+  .timeline-bar-labels { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
+  .bar-rail { height: 8px; background: #E2E8F0; border-radius: 999px; overflow: hidden; position: relative; }
+  .bar-fill { width: 55%; height: 100%; background: linear-gradient(90deg, #8B5CF6, #E93B67); border-radius: 999px; }
+
+  /* Symptom & Routine Checkers */
+  .routine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 14px 10px; }
+  .routine-card {
+    background: white;
+    border-radius: 16px;
+    padding: 12px;
+    box-shadow: var(--shadow-soft);
+    border-left: 4px solid var(--primary);
+  }
+  .routine-card.mint { border-left-color: var(--mint); }
+  .rc-status { font-size: 9px; font-weight: 700; color: var(--mint); text-transform: uppercase; }
+  .rc-name { font-size: 12px; font-weight: 800; color: var(--dark); margin-top: 2px; }
+  .rc-desc { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  /* Upcoming Clinic Investigation */
+  .investigation-card {
+    background: white;
+    border-radius: 14px;
+    margin: 0 14px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid #E2E8F0;
+  }
+  .inv-left { display: flex; align-items: center; gap: 10px; }
+  .inv-icon { width: 34px; height: 34px; border-radius: 10px; background: #EFF6FF; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .inv-title { font-size: 11px; font-weight: 800; color: var(--dark); }
+  .inv-sub { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
+  .inv-badge { background: #FEF3C7; color: #B45309; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+
+  /* SCREEN 2: 4Q GARBH SANSKAR SCHEDULE */
+  .date-scroller-modern {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 14px;
+    gap: 6px;
+  }
+  .d-pill {
+    flex: 1;
+    background: white;
+    border-radius: 14px;
+    padding: 8px 4px;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+  }
+  .d-pill.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 6px 14px var(--primary-glow);
+  }
+  .d-pill .wday { font-size: 9px; font-weight: 600; opacity: 0.8; }
+  .d-pill .dnum { font-size: 14px; font-weight: 800; font-family: 'Outfit', sans-serif; }
+
+  .four-q-banner {
+    background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+    color: white;
+    border-radius: 18px;
+    margin: 0 14px 10px;
+    padding: 14px;
+  }
+  .fq-title { font-size: 13px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; font-family: 'Outfit', sans-serif; }
+  .fq-pills-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+  .fq-chip {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 6px 2px;
+    text-align: center;
+  }
+  .fq-chip.done { background: rgba(233, 59, 103, 0.4); border: 1px solid var(--primary); }
+  .fq-label { font-size: 9px; font-weight: 700; color: #DDD; }
+  .fq-score { font-size: 12px; font-weight: 800; margin-top: 2px; }
+
+  .activity-item-v2 {
+    background: white;
+    border-radius: 14px;
+    margin: 0 14px 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--shadow-soft);
+  }
+  .act-art {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #FEF3C7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+  .act-details { flex: 1; }
+  .act-cat { font-size: 9px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
+  .act-heading { font-size: 12px; font-weight: 800; color: var(--dark); margin-top: 2px; }
+  .act-duration { font-size: 10px; color: var(--text-muted); }
+  .play-pill {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  /* SCREEN 3: HYPERLOCAL BIRTH CLUBS & COMMUNITY */
+  .club-header-box {
+    background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
+    color: white;
+    padding: 14px;
+    margin: 10px 14px;
+    border-radius: 16px;
+  }
+  .club-name { font-size: 14px; font-weight: 800; font-family: 'Outfit', sans-serif; }
+  .club-meta { font-size: 10px; opacity: 0.9; margin-top: 2px; }
+  
+  .post-card-v2 {
+    background: white;
+    border-radius: 14px;
+    margin: 0 14px 10px;
+    padding: 12px;
+    box-shadow: var(--shadow-soft);
+  }
+  .post-author { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .author-avatar { width: 30px; height: 30px; border-radius: 50%; background: #E0E7FF; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #4338CA; }
+  .author-name { font-size: 11px; font-weight: 800; color: var(--dark); }
+  .author-sub { font-size: 9px; color: var(--text-muted); }
+  .post-body { font-size: 11px; color: #334155; line-height: 1.45; }
+  .post-guardrail-tag {
+    background: #ECFDF5;
+    border: 1px solid #A7F3D0;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 9px;
+    color: #065F46;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+  }
+  .post-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding-top: 6px;
+    border-top: 1px solid #F1F5F9;
+  }
+
+  /* SCREEN 4: POSTNATAL & WEANING & SLEEP AUDIO */
+  .baby-profile-bar {
+    background: #F0FDF4;
+    border: 1px solid #DCFCE7;
+    border-radius: 16px;
+    padding: 10px 12px;
+    margin: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .baby-badge-left { display: flex; align-items: center; gap: 8px; }
+  .baby-avatar { width: 34px; height: 34px; border-radius: 50%; background: #DCFCE7; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .baby-name { font-size: 12px; font-weight: 800; color: #166534; font-family: 'Outfit', sans-serif; }
+  .baby-age { font-size: 10px; color: #15803D; }
+
+  .sleep-audio-player {
+    background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+    color: white;
+    border-radius: 18px;
+    margin: 0 14px 10px;
+    padding: 14px;
+  }
+  .player-top { display: flex; align-items: center; justify-content: space-between; }
+  .track-info { display: flex; align-items: center; gap: 10px; }
+  .track-art { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .track-name { font-size: 11px; font-weight: 800; }
+  .track-meta { font-size: 9px; opacity: 0.75; }
+  .play-btn-large { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; }
+  
+  .vax-compact-list { margin: 0 14px; }
+  .vax-row {
+    background: white;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-soft);
+  }
+  .vax-info-name { font-size: 11px; font-weight: 800; color: var(--dark); }
+  .vax-info-timing { font-size: 9px; color: var(--text-muted); }
+  .vax-pill-due { background: #FEF3C7; color: #B45309; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+</style>
+</head>
+<body>
+
+  <div class="header-brand">
+    <h1>Swasth <span>Mobile Experience</span></h1>
+    <p>AI-Orchestrated Long-Term Care Companion: 3D Stage Progress, Garbh Sanskar Routines, Hyperlocal Birth Clubs, and Infant Milestones</p>
+    <div class="tagline-badge">
+      <span>🛡️</span> Zero Clinical Diagnosis · 100% Non-Medical Workflow & Caregiver Engagement
+    </div>
+  </div>
+
+  <div class="showcase-grid">
+
+    <!-- DEVICE 1: STAGE-AWARE 3D PROGRESS -->
+    <div class="device-card">
+      <div class="device-title"><span class="num">1</span> 3D Stage Journey & Labs</div>
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="screen-content">
+          <div class="app-header">
+            <div class="user-badge-wrap">
+              <div class="user-avatar-mini">🤰</div>
+              <div>
+                <div class="greeting-sub">Namaste, Sunita</div>
+                <div class="user-status-text">Week 15 · 2nd Trimester</div>
+              </div>
+            </div>
+            <div class="header-actions">
+              <div class="icon-btn">🗣️</div>
+              <div class="icon-btn">🔔</div>
+            </div>
+          </div>
+
+          <!-- Hero 3D Card -->
+          <div class="hero-journey-card">
+            <div class="journey-stage-row">
+              <span class="stage-badge">BABY SIZE: APPLE 🍎</span>
+              <span style="font-size: 11px; font-weight: 700; color: #6B21A8;">Day 101</span>
+            </div>
+            <div class="hero-visual-center">
+              <div class="fetus-art">👶</div>
+              <div class="stats-floating">
+                <div class="stat-chip">
+                  <div class="val">15 Wk</div>
+                  <div class="lbl">Completed</div>
+                </div>
+                <div class="stat-chip">
+                  <div class="val">25 Wk</div>
+                  <div class="lbl">Remaining</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-tracker-wrap">
+            <div class="timeline-bar-labels">
+              <span>Trimester 1</span>
+              <span style="color: var(--primary);">Week 15 (Active)</span>
+              <span>Trimester 3</span>
+            </div>
+            <div class="bar-rail">
+              <div class="bar-fill"></div>
+            </div>
+          </div>
+
+          <!-- Non-Clinical Routine Nudges -->
+          <div class="routine-grid">
+            <div class="routine-card">
+              <div class="rc-status" style="color: #6366F1;">Normal Symptom</div>
+              <div class="rc-name">Mild Fatigue</div>
+              <div class="rc-desc">Gentle rest & warm water hydration</div>
+            </div>
+            <div class="routine-card mint">
+              <div class="rc-status">Daily Step Goal</div>
+              <div class="rc-name">3,420 Steps</div>
+              <div class="rc-desc">Safe non-strenuous morning walk</div>
+            </div>
+          </div>
+
+          <!-- Upcoming Investigation -->
+          <div class="investigation-card">
+            <div class="inv-left">
+              <div class="inv-icon">🏥</div>
+              <div>
+                <div class="inv-title">Ultrasound Scan Window</div>
+                <div class="inv-sub">Slot at PHC Rampur: Carry MCP Card</div>
+              </div>
+            </div>
+            <div class="inv-badge">Due in 5 Days</div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active"><span class="icon">🏠</span><span>Home</span></div>
+          <div class="nav-item"><span class="icon">📅</span><span>Schedule</span></div>
+          <div class="nav-fab-center"><span>+</span></div>
+          <div class="nav-item"><span class="icon">👥</span><span>Clubs</span></div>
+          <div class="nav-item"><span class="icon">⚙️</span><span>Caregiver</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEVICE 2: 4Q GARBH SANSKAR SCHEDULE -->
+    <div class="device-card">
+      <div class="device-title"><span class="num">2</span> 4Q Garbh Sanskar Schedule</div>
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="screen-content">
+          <div class="app-header">
+            <div class="user-badge-wrap">
+              <div class="user-avatar-mini" style="background: #F3E8FF; border-color: var(--lavender);">🪷</div>
+              <div>
+                <div class="greeting-sub">Daily Holistic Rituals</div>
+                <div class="user-status-text">Pregnancy Day 101</div>
+              </div>
+            </div>
+            <div class="header-actions">
+              <div class="icon-btn">🌐</div>
+              <div class="icon-btn">🔔</div>
+            </div>
+          </div>
+
+          <!-- Date Scroller -->
+          <div class="date-scroller-modern">
+            <div class="d-pill"><div class="wday">Mon</div><div class="dnum">99</div></div>
+            <div class="d-pill"><div class="wday">Tue</div><div class="dnum">100</div></div>
+            <div class="d-pill active"><div class="wday">Today</div><div class="dnum">101</div></div>
+            <div class="d-pill"><div class="wday">Thu</div><div class="dnum">102 🔒</div></div>
+            <div class="d-pill"><div class="wday">Fri</div><div class="dnum">103 🔒</div></div>
+          </div>
+
+          <!-- 4Q Framework -->
+          <div class="four-q-banner">
+            <div class="fq-title">
+              <span>Today's 4Q Routine</span>
+              <span style="font-size: 11px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 8px;">6 / 12 Done</span>
+            </div>
+            <div class="fq-pills-row">
+              <div class="fq-chip done"><div class="fq-label">IQ (Mind)</div><div class="fq-score">✓ Done</div></div>
+              <div class="fq-chip done"><div class="fq-label">EQ (Joy)</div><div class="fq-score">✓ Done</div></div>
+              <div class="fq-chip"><div class="fq-label">PQ (Body)</div><div class="fq-score">1 Pending</div></div>
+              <div class="fq-chip"><div class="fq-label">SQ (Soul)</div><div class="fq-score">1 Pending</div></div>
+            </div>
+          </div>
+
+          <!-- Activity List -->
+          <div class="activity-item-v2">
+            <div class="act-art">🎶</div>
+            <div class="act-details">
+              <div class="act-cat">Garbh Samvaad · SQ</div>
+              <div class="act-heading">Speaking to Baby & Raga Flute</div>
+              <div class="act-duration">5 min · Soothing acoustical lullaby</div>
+            </div>
+            <div class="play-pill">▶</div>
+          </div>
+
+          <div class="activity-item-v2">
+            <div class="act-art" style="background: #E0F2FE;">🧘‍♀️</div>
+            <div class="act-details">
+              <div class="act-cat">Gentle Mobility · PQ</div>
+              <div class="act-heading">Pranayama & Safe Breathing</div>
+              <div class="act-duration">10 min · Guided non-strenuous audio</div>
+            </div>
+            <div class="play-pill">▶</div>
+          </div>
+
+          <div class="activity-item-v2">
+            <div class="act-art" style="background: #ECFDF5;">💧</div>
+            <div class="act-details">
+              <div class="act-cat">Hydration Tracker · PQ</div>
+              <div class="act-heading">6 of 8 Glasses Consumed</div>
+              <div class="act-duration">+ Add glass with 1-tap</div>
+            </div>
+            <div class="play-pill" style="background: #ECFDF5; color: #059669;">+</div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item"><span class="icon">🏠</span><span>Home</span></div>
+          <div class="nav-item active"><span class="icon">📅</span><span>Schedule</span></div>
+          <div class="nav-fab-center"><span>+</span></div>
+          <div class="nav-item"><span class="icon">👥</span><span>Clubs</span></div>
+          <div class="nav-item"><span class="icon">⚙️</span><span>Caregiver</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEVICE 3: HYPERLOCAL BIRTH CLUBS -->
+    <div class="device-card">
+      <div class="device-title"><span class="num">3</span> Hyperlocal Birth Clubs</div>
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="screen-content">
+          <div class="app-header">
+            <div class="user-badge-wrap">
+              <div class="user-avatar-mini" style="background: #FFE4E6; border-color: #F43F5E;">👥</div>
+              <div>
+                <div class="greeting-sub">Peer Support Circle</div>
+                <div class="user-status-text">PHC Rampur Circle</div>
+              </div>
+            </div>
+            <div class="header-actions">
+              <div class="icon-btn">🔍</div>
+            </div>
+          </div>
+
+          <div class="club-header-box">
+            <div class="club-name">October 2026 Birth Club</div>
+            <div class="club-meta">142 Mothers expecting in your area · 24x7 Peer Empathy</div>
+          </div>
+
+          <!-- Post 1 -->
+          <div class="post-card-v2">
+            <div class="post-author">
+              <div class="author-avatar">PS</div>
+              <div>
+                <div class="author-name">Priyanka Sharma</div>
+                <div class="author-sub">Week 26 · Sector 4 Circle</div>
+              </div>
+            </div>
+            <div class="post-body">
+              "Kicking is very active after dinner! Has anyone tried listening to the flute Garbh Sanskar track? It relaxed my baby in minutes."
+            </div>
+            <div class="post-guardrail-tag">
+              <span>🛡️</span>
+              <span><strong>NeMo Guardrail Verified:</strong> Safe lifestyle sharing</span>
+            </div>
+            <div class="post-footer">
+              <span>❤️ 28 Moms agreed</span>
+              <span>💬 7 replies</span>
+            </div>
+          </div>
+
+          <!-- Post 2 with Caregiver -->
+          <div class="post-card-v2">
+            <div class="post-author">
+              <div class="author-avatar" style="background: #DCFCE7; color: #166534;">AR</div>
+              <div>
+                <div class="author-name">Anjali & Rohit (Partner Sync)</div>
+                <div class="author-sub">Week 18 · Near District Hospital</div>
+              </div>
+            </div>
+            <div class="post-body">
+              "Completed ultrasound appointment today. Clinic token counter was very quick if you register through the Swasth app beforehand!"
+            </div>
+            <div class="post-footer">
+              <span>❤️ 35 Helpful</span>
+              <span>💬 11 replies</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item"><span class="icon">🏠</span><span>Home</span></div>
+          <div class="nav-item"><span class="icon">📅</span><span>Schedule</span></div>
+          <div class="nav-fab-center"><span>+</span></div>
+          <div class="nav-item active"><span class="icon">👥</span><span>Clubs</span></div>
+          <div class="nav-item"><span class="icon">⚙️</span><span>Caregiver</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEVICE 4: POSTNATAL, VACCINES & SLEEP -->
+    <div class="device-card">
+      <div class="device-title"><span class="num">4</span> Infant Milestones & Sleep</div>
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="screen-content">
+          <div class="app-header">
+            <div class="user-badge-wrap">
+              <div class="user-avatar-mini" style="background: #DCFCE7; border-color: #22C55E;">🍼</div>
+              <div>
+                <div class="greeting-sub">Infant Continuity</div>
+                <div class="user-status-text">First 1,000 Days</div>
+              </div>
+            </div>
+            <div class="header-actions">
+              <div class="icon-btn">🔔</div>
+            </div>
+          </div>
+
+          <div class="baby-profile-bar">
+            <div class="baby-badge-left">
+              <div class="baby-avatar">👶</div>
+              <div>
+                <div class="baby-name">Aarav (Boy)</div>
+                <div class="baby-age">2 Months Old · Healthy Growth</div>
+              </div>
+            </div>
+            <span style="font-size: 11px; font-weight: 700; color: #16A34A;">MCP Synced ✓</span>
+          </div>
+
+          <!-- Audio Sleep Coaching -->
+          <div class="sleep-audio-player">
+            <div class="player-top">
+              <div class="track-info">
+                <div class="track-art">🌙</div>
+                <div>
+                  <div class="track-name">Calming Infant Lullaby</div>
+                  <div class="track-meta">Non-clinical sleep routine audio</div>
+                </div>
+              </div>
+              <div class="play-btn-large">▶</div>
+            </div>
+          </div>
+
+          <!-- Vaccination Cohort -->
+          <div style="margin: 10px 14px 6px; font-size: 11px; font-weight: 800; color: var(--dark); text-transform: uppercase;">
+            Upcoming Vaccine Window (6 Weeks)
+          </div>
+
+          <div class="vax-compact-list">
+            <div class="vax-row">
+              <div>
+                <div class="vax-info-name">Pentavalent-1 & OPV-1</div>
+                <div class="vax-info-timing">Protects from DPT, Hep-B, Hib</div>
+              </div>
+              <span class="vax-pill-due">Due in 4 Days</span>
+            </div>
+
+            <div class="vax-row">
+              <div>
+                <div class="vax-info-name">Rotavirus-1 (Oral Drops)</div>
+                <div class="vax-info-timing">Diarrheal prevention</div>
+              </div>
+              <span class="vax-pill-due">Due in 4 Days</span>
+            </div>
+
+            <div class="vax-row">
+              <div>
+                <div class="vax-info-name">BCG & Hep-B (Birth Dose)</div>
+                <div class="vax-info-timing">Hospital delivery log</div>
+              </div>
+              <span style="color: #059669; font-size: 10px; font-weight: 800;">✓ Done</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item"><span class="icon">🏠</span><span>Home</span></div>
+          <div class="nav-item"><span class="icon">📅</span><span>Schedule</span></div>
+          <div class="nav-fab-center"><span>+</span></div>
+          <div class="nav-item"><span class="icon">👥</span><span>Clubs</span></div>
+          <div class="nav-item active"><span class="icon">⚙️</span><span>Caregiver</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
