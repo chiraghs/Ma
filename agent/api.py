@@ -7,7 +7,11 @@ Connects to MA MCP Server over Streamable HTTP.
 import os
 import sys
 from typing import Any, Dict, List, Optional
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+
+# Load .env file automatically
+load_dotenv()
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
