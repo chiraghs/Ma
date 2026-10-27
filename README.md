@@ -11,12 +11,12 @@
 
 ---
 
-## 🎥 2.5-Minute Video Demonstration
+## 🎥 2-Minute Video Demonstration
 
 A synchronized walkthrough of the Echo Show 10 experience, demonstrating the self-hosted MCP server (spec `2025-11-25`, Streamable HTTP), Amazon Bedrock Converse integration, gentle voice narration, and compassionate maternal safety guardrails:
 
-- **Demo Video:** [`video/alexa_plus_swasth_ma_2_5min_demo.mp4`](video/alexa_plus_swasth_ma_2_5min_demo.mp4) (Full HD 1080p, 166 seconds, 7.0 MB)
-- **Audio Profile:** Microsoft Neural Jenny (`en-US-JennyNeural`, -4% rate) paired with an ambient 432 Hz healing harmonic drone.
+- **2-Minute Demo Video:** [`video/alexa_plus_swasth_ma_2min_demo.mp4`](video/alexa_plus_swasth_ma_2min_demo.mp4) (Full HD 1080p, **118.6 seconds (1:58)**, 5.51 MB — strictly under the 2:00 hackathon cutoff)
+- **Audio Profile:** Microsoft Neural Jenny (`en-US-JennyNeural`, -3% tempo) paired with an ambient 432 Hz healing harmonic tone.
 
 ---
 

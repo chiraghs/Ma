@@ -1,11 +1,13 @@
 import os
+import shutil
 import subprocess
 
 def compose():
     base_dir = "/Volumes/DiskD/Devpost/Ma/video"
     raw_dir = os.path.join(base_dir, "raw_recordings")
     narration_audio = os.path.join(base_dir, "narration_full.mp3")
-    final_video = os.path.join(base_dir, "alexa_plus_swasth_ma_2_5min_demo.mp4")
+    final_video_2min = os.path.join(base_dir, "alexa_plus_swasth_ma_2min_demo.mp4")
+    legacy_video = os.path.join(base_dir, "alexa_plus_swasth_ma_2_5min_demo.mp4")
 
     # Find the recorded webm file
     webms = [f for f in os.listdir(raw_dir) if f.endswith(".webm")]
@@ -53,7 +55,7 @@ def compose():
 
     # Final composite: encode video with H.264, trim/pad to narration duration, add mixed audio
     video_fade_out = max(0, narration_duration - 3)
-    print(f"Muxing final video to {final_video}...")
+    print(f"Muxing final video to {final_video_2min}...")
     subprocess.run([
         "/opt/homebrew/bin/ffmpeg", "-y",
         "-i", raw_video,
@@ -66,11 +68,14 @@ def compose():
         "-c:a", "aac",
         "-b:a", "192k",
         "-shortest",
-        final_video
+        final_video_2min
     ], check=True)
 
-    print(f"SUCCESS! Broadcast-quality video rendered at: {final_video}")
-    size_mb = os.path.getsize(final_video) / (1024 * 1024)
+    # Keep legacy file updated as well
+    shutil.copyfile(final_video_2min, legacy_video)
+
+    print(f"SUCCESS! 2-Minute broadcast-quality video rendered at: {final_video_2min}")
+    size_mb = os.path.getsize(final_video_2min) / (1024 * 1024)
     print(f"File size: {size_mb:.2f} MB")
 
 if __name__ == "__main__":

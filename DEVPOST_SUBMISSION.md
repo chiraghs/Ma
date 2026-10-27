@@ -6,9 +6,9 @@
 
 ## Video Demonstration
 
-- **Demo Video File:** [`video/alexa_plus_swasth_ma_2_5min_demo.mp4`](video/alexa_plus_swasth_ma_2_5min_demo.mp4) (1080p Full HD, 166 seconds, 7.0 MB)
+- **2-Minute Demo Video File:** [`video/alexa_plus_swasth_ma_2min_demo.mp4`](video/alexa_plus_swasth_ma_2min_demo.mp4) (1080p Full HD, **118.6 seconds (1:58)**, 5.51 MB — strictly under the 2-minute hackathon limit)
 - **Features Highlighted:** Self-hosted FastMCP server adhering to spec `2025-11-25` over Streamable HTTP on port `8005`, Amazon Bedrock Converse integration, Echo Show 10 landscape smart display, Alexa Multimodal Light Bar, 5-pillar Swasth maternal toolkit, and Tele-MANAS (`14416`) crisis routing.
-- **Narration Audio:** Gentle maternal neural voice (`en-US-JennyNeural`, -4% tempo) mixed with an acoustic 432 Hz healing tone.
+- **Narration Audio:** Gentle maternal neural voice (`en-US-JennyNeural`, -3% tempo) mixed with an acoustic 432 Hz healing tone.
 
 ---
 
